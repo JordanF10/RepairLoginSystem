@@ -10,6 +10,7 @@ import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.TextView;
 
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
@@ -29,6 +30,17 @@ public class CheckRepairStatus extends AppCompatActivity implements View.OnClick
     private EditText editTextRepairQuery;
     private Button buttonRepairQuery;
     private Repair tempRepair = new Repair();
+    private TextView textViewJobNumberReturned;
+    private TextView textViewJobStatusReturned;
+    private TextView textViewDateBookedInReturned;
+    private TextView textViewCustomerNameReturned;
+    private TextView textViewCustomerPhoneReturned;
+    private TextView textViewCustomerEmailReturned;
+    private TextView textViewCustomerImeiReturned;
+    private TextView textViewCustomerFaultReturned;
+    private TextView textViewCustomerStandbyImeiReturned;
+
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -38,6 +50,16 @@ public class CheckRepairStatus extends AppCompatActivity implements View.OnClick
 
         editTextRepairQuery = findViewById(R.id.editText_RepairQuery);
         buttonRepairQuery = findViewById(R.id.button_RepairQuery);
+        textViewJobNumberReturned = findViewById(R.id.textView_StatusJobNumber);
+        textViewJobStatusReturned = findViewById(R.id.textView_StatusCurrent);
+        textViewDateBookedInReturned = findViewById(R.id.textView_StatusDateBookedIn);
+        textViewCustomerNameReturned = findViewById(R.id.textView_StatusCustomerName);
+        textViewCustomerPhoneReturned = findViewById(R.id.textView_StatusCustomerPhone);
+        textViewCustomerEmailReturned = findViewById(R.id.textView_StatusCustomerEmail);
+        textViewCustomerImeiReturned = findViewById(R.id.textView_StatusCustomerIMEI);
+        textViewCustomerFaultReturned = findViewById(R.id.textView_StatusCustomerFault);
+        textViewCustomerStandbyImeiReturned = findViewById(R.id.textView_StatusStandbyIMEI);
+
 
         buttonRepairQuery.setOnClickListener(this);
     }
@@ -53,13 +75,25 @@ public class CheckRepairStatus extends AppCompatActivity implements View.OnClick
             public void onDataChange(DataSnapshot dataSnapshot) {
 
                 for (DataSnapshot repairsnapshot: dataSnapshot.getChildren()) {
-                    String name = (String) repairsnapshot.child("customerName").getValue();
-                    String fault = (String) repairsnapshot.child("faultDescription").getValue();
-                    String imei = (String) repairsnapshot.child("imeiNumber").getValue();
                     String jobNumber = (String) repairsnapshot.child("jobNumber").getValue().toString();
-                    long unformattedDate = (long) repairsnapshot.child("timeDateBookedIn").getValue();
-                    tempRepair.setTimeDateBookedIn(unformattedDate);
-                    System.out.println("NAME: " + name + ". FAULT FOUND: " + fault + ". IMEI NUMBER: " + imei + " JOB NUMBER: " + jobNumber + " Date Booked in:" + tempRepair.getFormattedTimestamp());
+                    String status = (String) repairsnapshot.child("repairStatus").getValue().toString();
+                    String date = (String) repairsnapshot.child("formattedTimestamp").getValue().toString();
+                    String name = (String) repairsnapshot.child("customerName").getValue().toString();
+                    String phone = (String) repairsnapshot.child("customerPhoneNumber").getValue().toString();
+                    String email = (String) repairsnapshot.child("customerEmailAddress").getValue().toString();
+                    String imei = (String) repairsnapshot.child("imeiNumber").getValue().toString();
+                    String fault = (String) repairsnapshot.child("faultDescription").getValue().toString();
+                    String standbyImei = (String) repairsnapshot.child("standbyPhoneIMEI").getValue().toString();
+
+                    textViewJobNumberReturned.setText("Job Number: \n"+jobNumber);
+                    textViewJobStatusReturned.setText("Repair Status: \n"+status);
+                    textViewDateBookedInReturned.setText("Created on: \n"+date);
+                    textViewCustomerNameReturned.setText("Customer Name: \n"+name);
+                    textViewCustomerPhoneReturned.setText("Customer Phone: \n"+phone);
+                    textViewCustomerEmailReturned.setText("Customer Email: \n"+email);
+                    textViewCustomerImeiReturned.setText("Handset IMEI: \n"+imei);
+                    textViewCustomerFaultReturned.setText("Reported Fault: \n"+fault);
+                    textViewCustomerStandbyImeiReturned.setText("Standby IMEI: \n"+standbyImei);
                 }
             }
 
