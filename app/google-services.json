@@ -1,0 +1,55 @@
+{
+  "project_info": {
+    "project_number": "620588408060",
+    "firebase_url": "https://repairloginsystem.firebaseio.com",
+    "project_id": "repairloginsystem",
+    "storage_bucket": "repairloginsystem.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:620588408060:android:a693605eb77e80ca",
+        "android_client_info": {
+          "package_name": "com.jordanforsythe.repairloginsystem"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "620588408060-c0uta9dos0tblormb28mfvi5e0c24r6u.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.jordanforsythe.repairloginsystem",
+            "certificate_hash": "d75a411159c0e59754c585b9266b35a560e3fba5"
+          }
+        },
+        {
+          "client_id": "620588408060-pqdtt7sovq8f7if67s6u1tkrl5qakfda.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyAaSaWkm9FWc4Q0WWAvvj803QnCt_T4QS4"
+        }
+      ],
+      "services": {
+        "analytics_service": {
+          "status": 1
+        },
+        "appinvite_service": {
+          "status": 2,
+          "other_platform_oauth_client": [
+            {
+              "client_id": "620588408060-pqdtt7sovq8f7if67s6u1tkrl5qakfda.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        },
+        "ads_service": {
+          "status": 2
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
