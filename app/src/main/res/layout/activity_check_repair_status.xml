@@ -107,6 +107,13 @@
                 android:layout_margin="20dp"
                 android:textSize="20sp" />
 
+            <TextView
+                android:id="@+id/textView_StatusEngineerNotes"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_margin="20dp"
+                android:textSize="20sp" />
+
 
 
         </LinearLayout>

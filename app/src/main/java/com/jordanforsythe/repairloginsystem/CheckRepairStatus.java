@@ -39,6 +39,7 @@ public class CheckRepairStatus extends AppCompatActivity implements View.OnClick
     private TextView textViewCustomerImeiReturned;
     private TextView textViewCustomerFaultReturned;
     private TextView textViewCustomerStandbyImeiReturned;
+    private TextView textViewEngineerNotesReturned;
 
 
 
@@ -59,6 +60,7 @@ public class CheckRepairStatus extends AppCompatActivity implements View.OnClick
         textViewCustomerImeiReturned = findViewById(R.id.textView_StatusCustomerIMEI);
         textViewCustomerFaultReturned = findViewById(R.id.textView_StatusCustomerFault);
         textViewCustomerStandbyImeiReturned = findViewById(R.id.textView_StatusStandbyIMEI);
+        textViewEngineerNotesReturned = findViewById(R.id.textView_StatusEngineerNotes);
 
 
         buttonRepairQuery.setOnClickListener(this);
@@ -84,6 +86,7 @@ public class CheckRepairStatus extends AppCompatActivity implements View.OnClick
                     String imei = (String) repairsnapshot.child("imeiNumber").getValue().toString();
                     String fault = (String) repairsnapshot.child("faultDescription").getValue().toString();
                     String standbyImei = (String) repairsnapshot.child("standbyPhoneIMEI").getValue().toString();
+                    String engineerNotes = (String) repairsnapshot.child("engineerNotes").getValue().toString();
 
                     textViewJobNumberReturned.setText("Job Number: \n"+jobNumber);
                     textViewJobStatusReturned.setText("Repair Status: \n"+status);
@@ -94,6 +97,14 @@ public class CheckRepairStatus extends AppCompatActivity implements View.OnClick
                     textViewCustomerImeiReturned.setText("Handset IMEI: \n"+imei);
                     textViewCustomerFaultReturned.setText("Reported Fault: \n"+fault);
                     textViewCustomerStandbyImeiReturned.setText("Standby IMEI: \n"+standbyImei);
+
+                    if(engineerNotes == null){
+                        return;
+                    }
+                    else{
+                        textViewEngineerNotesReturned.setText("Engineer Notes: \n" + engineerNotes);
+                    }
+
                 }
             }
 

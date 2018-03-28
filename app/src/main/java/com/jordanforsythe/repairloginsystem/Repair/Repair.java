@@ -17,12 +17,13 @@ public class Repair {
     private String jobNotes;
     private long timeDateBookedIn;
     private String standbyPhoneIMEI;
+    private String engineerNotes;
 
 
     public Repair() {
     }
 
-    public Repair(String customerName,String customerPhoneNumber,String customerEmailAddress, String imeiNumber, String faultDescription, int jobNumber, String repairStatus, long timeDateBookedIn, String standbyPhoneIMEI){
+    public Repair(String customerName,String customerPhoneNumber,String customerEmailAddress, String imeiNumber, String faultDescription, int jobNumber, String repairStatus, long timeDateBookedIn, String standbyPhoneIMEI, String engineerNotes){
         this.jobNumber = jobNumber;
         this.customerName = customerName;
         this.customerPhoneNumber = customerPhoneNumber;
@@ -32,6 +33,8 @@ public class Repair {
         this.repairStatus = repairStatus;
         this.timeDateBookedIn = timeDateBookedIn;
         this.standbyPhoneIMEI = standbyPhoneIMEI;
+        this.engineerNotes = engineerNotes;
+
 
     }
 
@@ -57,6 +60,10 @@ public class Repair {
     public String getCustomerEmailAddress() {return customerEmailAddress;}
 
     public String getStandbyPhoneIMEI() {return standbyPhoneIMEI;}
+
+    public String getEngineerNotes() {return engineerNotes;}
+
+    public void setEngineerNotes(String engineerNotes) {this.engineerNotes = engineerNotes;}
 
     public String getFormattedTimestamp() {
         String datePattern = "EEE, MMM d, h:mm a";

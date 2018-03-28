@@ -58,12 +58,17 @@ public class EngineerScreen extends AppCompatActivity implements View.OnClickLis
 
             if(repairJobKey != null) {
                 repairs.child(repairJobKey).child("repairStatus").setValue(spinnerEngineerRepairOptions.getSelectedItem().toString());
+
+                long currentDate = System.currentTimeMillis();
+                tempRepair.setTimeDateBookedIn(currentDate);
+                String formattedDate = tempRepair.getFormattedTimestamp();
+
                 if(tempRepair.getJobNotes() != null) {
-                    repairs.child(repairJobKey).child("engineerNotes").setValue(tempRepair.getJobNotes() +"\n" + editTextEngineerRepairNotes.getText().toString());
+                    repairs.child(repairJobKey).child("engineerNotes").setValue(formattedDate + ": " + editTextEngineerRepairNotes.getText().toString() +"\n"+ tempRepair.getJobNotes() );
                 }
 
                 else{
-                    repairs.child(repairJobKey).child("engineerNotes").setValue(editTextEngineerRepairNotes.getText().toString());
+                    repairs.child(repairJobKey).child("engineerNotes").setValue(formattedDate + ": " + editTextEngineerRepairNotes.getText().toString());
                 }
             }
 

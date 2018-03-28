@@ -75,19 +75,18 @@ public class LoginRepair extends AppCompatActivity implements View.OnClickListen
             String imeiNumber = editTextImeiNumber.getText().toString();
             String faultDescription = editTextFaultDescription.getText().toString();
             long currentDate = System.currentTimeMillis();
-            String standbyPhoneIMEI;
             jobNumber++;
+            String engineerNotes = "";
 
+            String standbyPhoneIMEI = editTextStandbyPhoneImei.getText().toString();
 
-            if(editTextStandbyPhoneImei != null) {
-                standbyPhoneIMEI = editTextStandbyPhoneImei.getText().toString();
-            }
-            else{
+            if(standbyPhoneIMEI.isEmpty()) {
                 standbyPhoneIMEI = "No standby given";
             }
 
+
             Repair repairToSend = new Repair(customerName, customerPhone, customerEmail, imeiNumber, faultDescription, jobNumber,
-                    repairStatusLoggedIn, currentDate, standbyPhoneIMEI);
+                    repairStatusLoggedIn, currentDate, standbyPhoneIMEI, engineerNotes);
 
             System.out.println("REPAIR SENT, Job number was " + String.valueOf(jobNumber) + ", success!" + customerEmail + customerPhone);
 
