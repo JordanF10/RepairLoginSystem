@@ -6,6 +6,7 @@ import android.os.Handler;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.view.MenuItem;
 import android.view.View;
 import android.webkit.WebView;
 import android.widget.Button;
@@ -38,6 +39,7 @@ public class EngineerScreen extends AppCompatActivity implements View.OnClickLis
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_engineer_screen);
+        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
 
         editTextEngineerRepairNumber = findViewById(R.id.editText_EngineerRepairNumber);
         spinnerEngineerRepairOptions = findViewById(R.id.spinner_EngineerRepairOption);
@@ -143,5 +145,12 @@ public class EngineerScreen extends AppCompatActivity implements View.OnClickLis
                 }
             }, 1000);
         }
+    }
+
+    public boolean onOptionsItemSelected(MenuItem item){
+        Intent myIntent = new Intent(getApplicationContext(), HomeScreen.class);
+        startActivityForResult(myIntent, 0);
+        finish();
+        return true;
     }
 }//class

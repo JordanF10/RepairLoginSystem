@@ -6,6 +6,7 @@ import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
+import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
@@ -44,6 +45,7 @@ public class LoginRepair extends AppCompatActivity implements View.OnClickListen
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_login_repair);
+        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
 
         buttonSendRepairData = findViewById(R.id.button_SendRepairLogin);
         editTextCustomerName = findViewById(R.id.editText_CustomerName);
@@ -171,5 +173,12 @@ public class LoginRepair extends AppCompatActivity implements View.OnClickListen
                 .setNegativeButton("No", dialogClickListener).show();
 
 
-    }//on back pressed
+    }//on back pressed\
+
+    public boolean onOptionsItemSelected(MenuItem item){
+        Intent myIntent = new Intent(getApplicationContext(), HomeScreen.class);
+        startActivityForResult(myIntent, 0);
+        finish();
+        return true;
+    }
 }

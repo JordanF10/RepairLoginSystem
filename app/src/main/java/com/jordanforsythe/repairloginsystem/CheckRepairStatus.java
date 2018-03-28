@@ -6,6 +6,7 @@ import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
+import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
@@ -33,6 +34,7 @@ public class CheckRepairStatus extends AppCompatActivity implements View.OnClick
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_check_repair_status);
+        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
 
         editTextRepairQuery = findViewById(R.id.editText_RepairQuery);
         buttonRepairQuery = findViewById(R.id.button_RepairQuery);
@@ -102,6 +104,13 @@ public class CheckRepairStatus extends AppCompatActivity implements View.OnClick
                 .setNegativeButton("No", dialogClickListener).show();
 
 
+    }
+
+    public boolean onOptionsItemSelected(MenuItem item){
+        Intent myIntent = new Intent(getApplicationContext(), HomeScreen.class);
+        startActivityForResult(myIntent, 0);
+        finish();
+        return true;
     }
 
 }

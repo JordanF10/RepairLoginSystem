@@ -9,18 +9,20 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
+
         <activity android:name=".loginScreen">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
-
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-        <activity android:name=".HomeScreen" />
-        <activity android:name=".LoginRepair" />
-        <activity android:name=".CheckRepairStatus" />
-        <activity android:name=".EngineerScreen" />
-        <activity android:name=".LogoutRepair"></activity>
+
+        <activity android:name=".HomeScreen"/>
+        <activity android:name=".LoginRepair" android:parentActivityName=".HomeScreen" />
+        <activity android:name=".CheckRepairStatus" android:parentActivityName=".HomeScreen" />
+        <activity android:name=".EngineerScreen" android:parentActivityName=".HomeScreen"/>
+        <activity android:name=".LogoutRepair" android:parentActivityName=".HomeScreen"/>
+
     </application>
 
 </manifest>

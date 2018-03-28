@@ -7,6 +7,7 @@ import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
+import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
@@ -27,7 +28,6 @@ public class LogoutRepair extends AppCompatActivity implements View.OnClickListe
 
     private Button buttonLogoutRepair;
     private EditText editTextLogoutRepairNumber;
-    private int jobNumberTyped;
     private Repair tempRepair = new Repair();
 
 
@@ -35,6 +35,7 @@ public class LogoutRepair extends AppCompatActivity implements View.OnClickListe
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_logout_repair);
+        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
 
         buttonLogoutRepair = findViewById(R.id.button_LogoutRepair);
         editTextLogoutRepairNumber = findViewById(R.id.editText_LogoutRepairNumber);
@@ -111,7 +112,7 @@ public class LogoutRepair extends AppCompatActivity implements View.OnClickListe
 
         Log.d("OHBABY", "It got to repairjobnumber");
 
-        jobNumberTyped = Integer.parseInt(editTextLogoutRepairNumber.getText().toString());
+        int jobNumberTyped = Integer.parseInt(editTextLogoutRepairNumber.getText().toString());
 
         Query firebaseDatabaseQuery = repairs.orderByChild("jobNumber").equalTo(jobNumberTyped);
 
@@ -134,6 +135,12 @@ public class LogoutRepair extends AppCompatActivity implements View.OnClickListe
 
     }//get repair job number
 
+    public boolean onOptionsItemSelected(MenuItem item){
+        Intent myIntent = new Intent(getApplicationContext(), HomeScreen.class);
+        startActivityForResult(myIntent, 0);
+        finish();
+        return true;
+    }
 
 
 }

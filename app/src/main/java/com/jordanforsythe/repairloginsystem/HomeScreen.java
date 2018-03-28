@@ -50,9 +50,6 @@ public class HomeScreen extends AppCompatActivity implements View.OnClickListene
         buttonEngineerScreen.setOnClickListener(this);
         buttonLogoutRepairScreen.setOnClickListener(this);
 
-
-
-
     }
 
     @Override
@@ -81,4 +78,5 @@ public class HomeScreen extends AppCompatActivity implements View.OnClickListene
             startActivity(new Intent(this, LogoutRepair.class));
         }
     }
+
 }
