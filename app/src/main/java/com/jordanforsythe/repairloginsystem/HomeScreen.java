@@ -19,6 +19,8 @@ public class HomeScreen extends AppCompatActivity implements View.OnClickListene
     private Button buttonCheckRepair;
     private Button buttonEngineerScreen;
     private Button buttonLogoutRepairScreen;
+    private Button buttonServiceJobLogin;
+    private Button buttonServiceJobUpdate;
 
 
     @Override
@@ -30,7 +32,7 @@ public class HomeScreen extends AppCompatActivity implements View.OnClickListene
 
         if(mAuth.getCurrentUser() == null){
             finish();
-            startActivity(new Intent(this, loginScreen.class));
+            startActivity(new Intent(this, LoginScreen.class));
         }
 
         FirebaseUser user = mAuth.getCurrentUser();
@@ -43,12 +45,16 @@ public class HomeScreen extends AppCompatActivity implements View.OnClickListene
         buttonCheckRepair = findViewById(R.id.button_CheckRepairStatus);
         buttonEngineerScreen = findViewById(R.id.button_EngineerUpdateScreen);
         buttonLogoutRepairScreen = findViewById(R.id.button_LogoutRepairActivity);
+        buttonServiceJobLogin = findViewById(R.id.button_ServiceJobLogin);
+        buttonServiceJobUpdate = findViewById(R.id.button_ServiceJobUpdate);
 
         buttonLogout.setOnClickListener(this);
         buttonLoginRepair.setOnClickListener(this);
         buttonCheckRepair.setOnClickListener(this);
         buttonEngineerScreen.setOnClickListener(this);
         buttonLogoutRepairScreen.setOnClickListener(this);
+        buttonServiceJobLogin.setOnClickListener(this);
+        buttonServiceJobUpdate.setOnClickListener(this);
 
     }
 
@@ -57,7 +63,7 @@ public class HomeScreen extends AppCompatActivity implements View.OnClickListene
         if (view == buttonLogout){
             mAuth.signOut();
             finish();
-            startActivity(new Intent(this, loginScreen.class));
+            startActivity(new Intent(this, LoginScreen.class));
         }
         if (view == buttonLoginRepair){
             finish();
@@ -77,6 +83,14 @@ public class HomeScreen extends AppCompatActivity implements View.OnClickListene
         if(view == buttonLogoutRepairScreen){
             startActivity(new Intent(this, LogoutRepair.class));
         }
+        if(view == buttonServiceJobLogin){
+            startActivity(new Intent(this, ServiceJobLogin.class));
+        }
+        if(view == buttonServiceJobUpdate){
+            startActivity(new Intent(this, ServiceJobUpdate.class));
+        }
+
+
     }
 
 }

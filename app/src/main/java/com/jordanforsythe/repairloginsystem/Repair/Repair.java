@@ -23,7 +23,9 @@ public class Repair {
     public Repair() {
     }
 
-    public Repair(String customerName,String customerPhoneNumber,String customerEmailAddress, String imeiNumber, String faultDescription, int jobNumber, String repairStatus, long timeDateBookedIn, String standbyPhoneIMEI, String engineerNotes){
+    public Repair(String customerName,String customerPhoneNumber,String customerEmailAddress, String imeiNumber, String faultDescription, int jobNumber,
+                  String repairStatus, long timeDateBookedIn, String standbyPhoneIMEI, String engineerNotes){
+
         this.jobNumber = jobNumber;
         this.customerName = customerName;
         this.customerPhoneNumber = customerPhoneNumber;
@@ -34,9 +36,7 @@ public class Repair {
         this.timeDateBookedIn = timeDateBookedIn;
         this.standbyPhoneIMEI = standbyPhoneIMEI;
         this.engineerNotes = engineerNotes;
-
-
-    }
+    }//repair
 
     public String getCustomerName(){ return customerName;}
     public String getImeiNumber() { return imeiNumber;}

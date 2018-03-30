@@ -3,6 +3,7 @@
     <string name="title_activity_engineer_update_repair">EngineerUpdateRepair</string>
 
     <string-array name="RepairEngineerOptions">
+        <item>Logged In</item>
         <item>Completed</item>
         <item>Beyond Economical Repair</item>
         <item>Sent to Main Repair Centre</item>

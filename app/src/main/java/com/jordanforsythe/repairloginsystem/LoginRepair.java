@@ -55,8 +55,6 @@ public class LoginRepair extends AppCompatActivity implements View.OnClickListen
         editTextCustomerPhone = findViewById(R.id.editText_CustomerPhoneNumber);
         editTextStandbyPhoneImei = findViewById(R.id.editText_standbyPhoneImei);
 
-        System.out.println(String.valueOf(jobNumber) + "BeforeBUttonCLock");
-
         queryNextJobNo();
 
         buttonSendRepairData.setOnClickListener(this);
@@ -179,5 +177,5 @@ public class LoginRepair extends AppCompatActivity implements View.OnClickListen
         startActivityForResult(myIntent, 0);
         finish();
         return true;
-    }
+    }//Make menu arrow button work
 }
