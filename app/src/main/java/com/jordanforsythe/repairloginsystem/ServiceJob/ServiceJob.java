@@ -6,7 +6,7 @@ import java.util.Date;
 public class ServiceJob {
 
 
-    private String serviceJobcustomerName;
+    private String serviceJobCustomerName;
     private String serviceJobCustomerPhone;
     private String serviceJobFaultNotes;
     private int serviceJobNumber;
@@ -19,15 +19,15 @@ public class ServiceJob {
     public ServiceJob(String serviceJobcustomerName, String serviceJobCustomerPhone, String serviceJobFaultNotes, int serviceJobNumber,
                       long serviceJobtimeDateBookedIn) {
 
-        this.serviceJobcustomerName = serviceJobcustomerName;
+        this.serviceJobCustomerName = serviceJobcustomerName;
         this.serviceJobCustomerPhone = serviceJobCustomerPhone;
         this.serviceJobFaultNotes = serviceJobFaultNotes;
         this.serviceJobNumber = serviceJobNumber;
         this.serviceJobtimeDateBookedIn = serviceJobtimeDateBookedIn;
     }
 
-    public String getServiceJobcustomerName() {return serviceJobcustomerName;}
-    public void setServiceJobcustomerName(String serviceJobcustomerName) {this.serviceJobcustomerName = serviceJobcustomerName;}
+    public String getServiceJobCustomerName() {return serviceJobCustomerName;}
+    public void setServiceJobCustomerName(String serviceJobCustomerName) {this.serviceJobCustomerName = serviceJobCustomerName;}
 
     public String getServiceJobCustomerPhone() {return serviceJobCustomerPhone;}
     public void setServiceJobCustomerPhone(String serviceJobCustomerPhone) {this.serviceJobCustomerPhone = serviceJobCustomerPhone;}

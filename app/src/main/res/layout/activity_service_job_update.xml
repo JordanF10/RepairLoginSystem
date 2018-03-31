@@ -6,4 +6,66 @@
     android:layout_height="match_parent"
     tools:context="com.jordanforsythe.repairloginsystem.ServiceJobUpdate">
 
+    <ScrollView
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical" >
+
+            <EditText
+                android:id="@+id/editText_ServiceJobSerach"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_margin="14dp"
+                android:ems="10"
+                android:hint="Service Job Number"
+                android:inputType="textPersonName" />
+
+            <Button
+                android:id="@+id/button_ServiceJobSearch"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_margin="14dp"
+                android:text="Search Job" />
+
+            <TextView
+                android:id="@+id/textView_ServiceJobNumberReturned"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_margin="14dp"
+                android:textSize="18sp" />
+
+            <TextView
+                android:id="@+id/textView_ServiceJobCustomerName"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_margin="14dp"
+                android:textSize="18sp" />
+
+            <TextView
+                android:id="@+id/textView_ServiceJobCustomerPhone"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_margin="14dp"
+                android:textSize="18sp" />
+
+            <TextView
+                android:id="@+id/textView_ServiceJobNotes"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_margin="14dp"
+                android:textSize="18sp" />
+
+            <Button
+                android:id="@+id/button_ServiceJobAddNotes"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_margin="14dp"
+                android:text="Add Notes" />
+
+        </LinearLayout>
+    </ScrollView>
 </android.support.constraint.ConstraintLayout>
