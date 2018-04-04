@@ -10,6 +10,8 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
 
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.ChildEventListener;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
@@ -19,6 +21,7 @@ import com.google.firebase.database.Query;
 import com.google.firebase.database.ValueEventListener;
 import com.jordanforsythe.repairloginsystem.ServiceJob.ServiceJob;
 
+import java.nio.file.FileVisitResult;
 import java.sql.BatchUpdateException;
 
 public class ServiceJobLogin extends AppCompatActivity implements View.OnClickListener, ChildEventListener {
@@ -26,6 +29,7 @@ public class ServiceJobLogin extends AppCompatActivity implements View.OnClickLi
     public static final String REPAIR_FIREBASE_KEY_SERVICE = "serviceJobs";
     FirebaseDatabase firebaseDatabase = FirebaseDatabase.getInstance();
     DatabaseReference serviceJobs = firebaseDatabase.getReference(REPAIR_FIREBASE_KEY_SERVICE);
+    private FirebaseAuth mAuth;
 
     private EditText editTextServiceJobCustomerName;
     private EditText editTextServiceJobCustomerPhone;
@@ -39,6 +43,7 @@ public class ServiceJobLogin extends AppCompatActivity implements View.OnClickLi
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_service_job_login);
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+        mAuth = FirebaseAuth.getInstance();
 
         editTextServiceJobCustomerName = findViewById(R.id.editText_ServiceJobCustomerName);
         editTextServiceJobCustomerPhone = findViewById(R.id.editText_ServiceJobCustomerPhone);
@@ -59,11 +64,16 @@ public class ServiceJobLogin extends AppCompatActivity implements View.OnClickLi
 
         String customerName = editTextServiceJobCustomerName.getText().toString();
         String customerPhone = editTextServiceJobCustomerPhone.getText().toString();
-        String serviceFault = editTextServiceJobFaultNotes.getText().toString();
         long currentDate = System.currentTimeMillis();
         serviceJobNumber++;
+        FirebaseUser user = mAuth.getCurrentUser();
+        String username = user.getEmail();
 
-        ServiceJob serviceJobToSend = new ServiceJob(customerName, customerPhone, serviceFault, serviceJobNumber, currentDate);
+        tempServiceJob.setServiceJobtimeDateBookedIn(currentDate);
+        String datetime = tempServiceJob.getFormattedTimestamp();
+        String serviceFault = ("\nAgent: " + username + "\n" + datetime + "\nNotes: " + editTextServiceJobFaultNotes.getText().toString());
+
+        ServiceJob serviceJobToSend = new ServiceJob(customerName, customerPhone, serviceFault, serviceJobNumber, currentDate, username);
 
         serviceJobs.push().setValue(serviceJobToSend);
     }

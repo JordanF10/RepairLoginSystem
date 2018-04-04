@@ -39,6 +39,13 @@
                 android:textSize="18sp" />
 
             <TextView
+                android:id="@+id/textView_ServiceJobAgentName"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_margin="14dp"
+                android:textSize="18sp" />
+
+            <TextView
                 android:id="@+id/textView_ServiceJobCustomerName"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"

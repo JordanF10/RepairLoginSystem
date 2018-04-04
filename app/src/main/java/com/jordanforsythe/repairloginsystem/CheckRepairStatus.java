@@ -40,6 +40,7 @@ public class CheckRepairStatus extends AppCompatActivity implements View.OnClick
     private TextView textViewCustomerFaultReturned;
     private TextView textViewCustomerStandbyImeiReturned;
     private TextView textViewEngineerNotesReturned;
+    private TextView textViewStatusLoggedInBy;
 
 
 
@@ -61,6 +62,7 @@ public class CheckRepairStatus extends AppCompatActivity implements View.OnClick
         textViewCustomerFaultReturned = findViewById(R.id.textView_StatusCustomerFault);
         textViewCustomerStandbyImeiReturned = findViewById(R.id.textView_StatusStandbyIMEI);
         textViewEngineerNotesReturned = findViewById(R.id.textView_StatusEngineerNotes);
+        textViewStatusLoggedInBy = findViewById(R.id.textView_StatusLoggedInBy);
 
 
         buttonRepairQuery.setOnClickListener(this);
@@ -80,6 +82,7 @@ public class CheckRepairStatus extends AppCompatActivity implements View.OnClick
                     String jobNumber = (String) repairsnapshot.child("jobNumber").getValue().toString();
                     String status = (String) repairsnapshot.child("repairStatus").getValue().toString();
                     String date = (String) repairsnapshot.child("formattedTimestamp").getValue().toString();
+                    String loggedInBy = (String) repairsnapshot.child("loggedInBy").getValue().toString();
                     String name = (String) repairsnapshot.child("customerName").getValue().toString();
                     String phone = (String) repairsnapshot.child("customerPhoneNumber").getValue().toString();
                     String email = (String) repairsnapshot.child("customerEmailAddress").getValue().toString();
@@ -91,6 +94,7 @@ public class CheckRepairStatus extends AppCompatActivity implements View.OnClick
                     textViewJobNumberReturned.setText("Job Number: \n"+jobNumber);
                     textViewJobStatusReturned.setText("Repair Status: \n"+status);
                     textViewDateBookedInReturned.setText("Created on: \n"+date);
+                    textViewStatusLoggedInBy.setText("Logged in by: \n" + loggedInBy);
                     textViewCustomerNameReturned.setText("Customer Name: \n"+name);
                     textViewCustomerPhoneReturned.setText("Customer Phone: \n"+phone);
                     textViewCustomerEmailReturned.setText("Customer Email: \n"+email);
@@ -98,8 +102,8 @@ public class CheckRepairStatus extends AppCompatActivity implements View.OnClick
                     textViewCustomerFaultReturned.setText("Reported Fault: \n"+fault);
                     textViewCustomerStandbyImeiReturned.setText("Standby IMEI: \n"+standbyImei);
 
-                    if(engineerNotes == null){
-                        return;
+                    if(engineerNotes.isEmpty()){
+                        textViewEngineerNotesReturned.setText("Engineer Notes: \nNo Engineer notes yet!");
                     }
                     else{
                         textViewEngineerNotesReturned.setText("Engineer Notes: \n" + engineerNotes);

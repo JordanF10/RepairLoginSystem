@@ -11,19 +11,22 @@ public class ServiceJob {
     private String serviceJobFaultNotes;
     private int serviceJobNumber;
     private long serviceJobtimeDateBookedIn;
+    private String serviceJobUsername;
+    private String serviceDatabaseAutomaticKey;
 
 
     public ServiceJob(){
     }
 
     public ServiceJob(String serviceJobcustomerName, String serviceJobCustomerPhone, String serviceJobFaultNotes, int serviceJobNumber,
-                      long serviceJobtimeDateBookedIn) {
+                      long serviceJobtimeDateBookedIn, String serviceJobUsername) {
 
         this.serviceJobCustomerName = serviceJobcustomerName;
         this.serviceJobCustomerPhone = serviceJobCustomerPhone;
         this.serviceJobFaultNotes = serviceJobFaultNotes;
         this.serviceJobNumber = serviceJobNumber;
         this.serviceJobtimeDateBookedIn = serviceJobtimeDateBookedIn;
+        this.serviceJobUsername = serviceJobUsername;
     }
 
     public String getServiceJobCustomerName() {return serviceJobCustomerName;}
@@ -40,8 +43,15 @@ public class ServiceJob {
 
     public void setServiceJobtimeDateBookedIn(long serviceJobtimeDateBookedIn) {this.serviceJobtimeDateBookedIn = serviceJobtimeDateBookedIn;}
 
+    public String getServiceJobUsername() {return serviceJobUsername;}
+
+    public void setServiceJobUsername(String serviceJobUsername) {this.serviceJobUsername = serviceJobUsername;}
+
+    public String getserviceDatabaseAutomaticKey() {return serviceDatabaseAutomaticKey;}
+    public void setserviceDatabaseAutomaticKey(String serviceDatabaseAutomaticKey) {this.serviceDatabaseAutomaticKey = serviceDatabaseAutomaticKey;}
+
     public String getFormattedTimestamp() {
-        String datePattern = "EEE, MMM d, h:mm a";
+        String datePattern = "d MMM, h:mm a";
         SimpleDateFormat dateFormat = new SimpleDateFormat(datePattern);
         Date repairCreationDate = new Date(serviceJobtimeDateBookedIn);
         return dateFormat.format(repairCreationDate);

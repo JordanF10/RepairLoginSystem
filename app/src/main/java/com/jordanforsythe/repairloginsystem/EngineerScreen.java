@@ -13,6 +13,8 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.Spinner;
 
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
@@ -26,6 +28,7 @@ public class EngineerScreen extends AppCompatActivity implements View.OnClickLis
     public static final String REPAIR_FIREBASE_KEY = "repairs";
     FirebaseDatabase firebaseDatabase = FirebaseDatabase.getInstance();
     DatabaseReference repairs = firebaseDatabase.getReference(REPAIR_FIREBASE_KEY);
+    private FirebaseAuth mAuth;
 
     private EditText editTextEngineerRepairNumber;
     private Spinner spinnerEngineerRepairOptions;
@@ -40,6 +43,7 @@ public class EngineerScreen extends AppCompatActivity implements View.OnClickLis
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_engineer_screen);
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+        mAuth = FirebaseAuth.getInstance();
 
         editTextEngineerRepairNumber = findViewById(R.id.editText_EngineerRepairNumber);
         spinnerEngineerRepairOptions = findViewById(R.id.spinner_EngineerRepairOption);
@@ -53,8 +57,8 @@ public class EngineerScreen extends AppCompatActivity implements View.OnClickLis
     private void sendEngineerUpdateToFirebase(){
 
             repairJobKey = tempRepair.getDatabaseAutomaticKey();
-            System.out.println(tempRepair.getDatabaseAutomaticKey());
-            System.out.println(repairJobKey);
+            FirebaseUser user = mAuth.getCurrentUser();
+            String username = user.getEmail();
 
             if(repairJobKey != null) {
                 repairs.child(repairJobKey).child("repairStatus").setValue(spinnerEngineerRepairOptions.getSelectedItem().toString());
@@ -64,11 +68,12 @@ public class EngineerScreen extends AppCompatActivity implements View.OnClickLis
                 String formattedDate = tempRepair.getFormattedTimestamp();
 
                 if(tempRepair.getJobNotes() != null) {
-                    repairs.child(repairJobKey).child("engineerNotes").setValue(formattedDate + ": " + editTextEngineerRepairNotes.getText().toString() +"\n"+ tempRepair.getJobNotes() );
+                    repairs.child(repairJobKey).child("engineerNotes").setValue("\n" + "Engineer: " + username + "\n" + formattedDate + "\nNotes: " +
+                                                        editTextEngineerRepairNotes.getText().toString() +"\n"+ tempRepair.getJobNotes());
                 }
 
                 else{
-                    repairs.child(repairJobKey).child("engineerNotes").setValue(formattedDate + ": " + editTextEngineerRepairNotes.getText().toString());
+                    repairs.child(repairJobKey).child("engineerNotes").setValue("\n" + "Engineer: " + username + "\n" + formattedDate + "\nNotes: " + editTextEngineerRepairNotes.getText().toString());
                 }
             }
 

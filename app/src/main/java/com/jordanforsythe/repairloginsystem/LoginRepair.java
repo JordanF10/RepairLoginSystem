@@ -11,6 +11,8 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
 
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.ChildEventListener;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
@@ -26,6 +28,7 @@ public class LoginRepair extends AppCompatActivity implements View.OnClickListen
     public static final String REPAIR_FIREBASE_KEY = "repairs";
     FirebaseDatabase firebaseDatabase = FirebaseDatabase.getInstance();
     DatabaseReference repairs = firebaseDatabase.getReference(REPAIR_FIREBASE_KEY);
+    private FirebaseAuth mAuth;
 
     private Button buttonSendRepairData;
     private EditText editTextCustomerName;
@@ -46,6 +49,7 @@ public class LoginRepair extends AppCompatActivity implements View.OnClickListen
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_login_repair);
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+        mAuth = FirebaseAuth.getInstance();
 
         buttonSendRepairData = findViewById(R.id.button_SendRepairLogin);
         editTextCustomerName = findViewById(R.id.editText_CustomerName);
@@ -75,6 +79,8 @@ public class LoginRepair extends AppCompatActivity implements View.OnClickListen
             long currentDate = System.currentTimeMillis();
             jobNumber++;
             String engineerNotes = "";
+            FirebaseUser user = mAuth.getCurrentUser();
+            String username = user.getEmail();
 
             String standbyPhoneIMEI = editTextStandbyPhoneImei.getText().toString();
 
@@ -84,7 +90,7 @@ public class LoginRepair extends AppCompatActivity implements View.OnClickListen
 
 
             Repair repairToSend = new Repair(customerName, customerPhone, customerEmail, imeiNumber, faultDescription, jobNumber,
-                    repairStatusLoggedIn, currentDate, standbyPhoneIMEI, engineerNotes);
+                    repairStatusLoggedIn, currentDate, standbyPhoneIMEI, engineerNotes, username);
 
             System.out.println("REPAIR SENT, Job number was " + String.valueOf(jobNumber) + ", success!" + customerEmail + customerPhone);
 

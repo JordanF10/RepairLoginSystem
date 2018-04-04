@@ -18,13 +18,14 @@ public class Repair {
     private long timeDateBookedIn;
     private String standbyPhoneIMEI;
     private String engineerNotes;
+    private String loggedInBy;
 
 
     public Repair() {
     }
 
     public Repair(String customerName,String customerPhoneNumber,String customerEmailAddress, String imeiNumber, String faultDescription, int jobNumber,
-                  String repairStatus, long timeDateBookedIn, String standbyPhoneIMEI, String engineerNotes){
+                  String repairStatus, long timeDateBookedIn, String standbyPhoneIMEI, String engineerNotes, String loggedInBy){
 
         this.jobNumber = jobNumber;
         this.customerName = customerName;
@@ -36,6 +37,7 @@ public class Repair {
         this.timeDateBookedIn = timeDateBookedIn;
         this.standbyPhoneIMEI = standbyPhoneIMEI;
         this.engineerNotes = engineerNotes;
+        this.loggedInBy = loggedInBy;
     }//repair
 
     public String getCustomerName(){ return customerName;}
@@ -65,8 +67,12 @@ public class Repair {
 
     public void setEngineerNotes(String engineerNotes) {this.engineerNotes = engineerNotes;}
 
+    public String getLoggedInBy() {return loggedInBy;}
+
+    public void setLoggedInBy(String loggedInBy) {this.loggedInBy = loggedInBy;}
+
     public String getFormattedTimestamp() {
-        String datePattern = "EEE, MMM d, h:mm a";
+        String datePattern = "d MMM, h:mm a";
         SimpleDateFormat dateFormat = new SimpleDateFormat(datePattern);
         Date repairCreationDate = new Date(timeDateBookedIn);
         return dateFormat.format(repairCreationDate);
