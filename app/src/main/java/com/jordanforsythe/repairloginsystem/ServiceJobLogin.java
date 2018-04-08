@@ -9,6 +9,8 @@ import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.ImageButton;
+import android.widget.TextView;
 
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
@@ -76,6 +78,9 @@ public class ServiceJobLogin extends AppCompatActivity implements View.OnClickLi
         ServiceJob serviceJobToSend = new ServiceJob(customerName, customerPhone, serviceFault, serviceJobNumber, currentDate, username);
 
         serviceJobs.push().setValue(serviceJobToSend);
+
+        showDialogAfterSubmitted(String.valueOf(serviceJobNumber));
+
     }
 
     private void queryNextJobNo(){
@@ -100,11 +105,39 @@ public class ServiceJobLogin extends AppCompatActivity implements View.OnClickLi
         });//Query for the job
     }//Query next job number method
 
+    private void showDialogAfterSubmitted(String serviceJobNumber) {
+
+        String dialogText = "Service Job Logged in, the service job number is " + serviceJobNumber;
+        AlertDialog.Builder mBuilder = new AlertDialog.Builder(this);
+        View mView = getLayoutInflater().inflate(R.layout.dialog_repair_logged_out, null);
+
+        TextView textViewDialogText = mView.findViewById(R.id.textView_DialogRepairLoggedOut);
+        ImageButton imageButtonDialogText = mView.findViewById(R.id.imageButton_DialogRepairLoggedOut);
+
+        textViewDialogText.setText(dialogText);
+
+        mBuilder.setView(mView);
+        final AlertDialog dialogServiceJobLoggedIn = mBuilder.create();
+        dialogServiceJobLoggedIn.show();
+
+        imageButtonDialogText.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                dialogServiceJobLoggedIn.dismiss();
+                startActivity(new Intent(getApplicationContext(), HomeScreen.class));
+                finish();
+            }
+        });
+
+    }
+
 
     @Override
     public void onClick(View view) {
         if(view == buttonServiceJobCreate){
-            pushServiceJobToFirebase();
+            if(checkFieldsAreNotEmpty()) {
+                pushServiceJobToFirebase();
+            }
         }
     }
 
@@ -133,7 +166,7 @@ public class ServiceJobLogin extends AppCompatActivity implements View.OnClickLi
                 .setNegativeButton("No", dialogClickListener).show();
 
 
-    }//on back pressed
+    }//on back pressed for dialog box
 
     public boolean onOptionsItemSelected(MenuItem item){
         Intent myIntent = new Intent(getApplicationContext(), HomeScreen.class);
@@ -141,6 +174,54 @@ public class ServiceJobLogin extends AppCompatActivity implements View.OnClickLi
         finish();
         return true;
     }//make menu back button work
+
+    public boolean checkFieldsAreNotEmpty(){
+
+        boolean areallempty = false;
+        String dialogMessage = "";
+
+        if(editTextServiceJobCustomerName.getText().toString().length() > 0){
+            if(editTextServiceJobCustomerPhone.getText().toString().length() == 11) {
+                if(editTextServiceJobFaultNotes.getText().toString().length() > 10) {
+                    areallempty = true;
+                }
+                else{
+                    dialogMessage="Please enter detailed service job notes";
+                }
+            }
+            else{
+                dialogMessage="Please enter 11 digit phone number";
+            }
+        }
+        else{
+            dialogMessage = "Please enter a Customer Name";
+        }
+
+        if(!areallempty) {
+
+            DialogInterface.OnClickListener dialogClickListener = new DialogInterface.OnClickListener() {
+                @Override
+                public void onClick(DialogInterface dialog, int option) {
+                    switch (option) {
+                        case DialogInterface.BUTTON_POSITIVE:
+                            //Yes button clicked
+                            break;
+                        case DialogInterface.BUTTON_NEGATIVE:
+                            //No button clicked
+                            break;
+                    }
+                }
+            };//dialog listener
+
+            AlertDialog.Builder fieldAlert = new AlertDialog.Builder(this);
+            fieldAlert.setMessage(dialogMessage).setPositiveButton("OK", dialogClickListener).show();
+
+        }//show dialog box if something is empty
+
+        return areallempty;
+
+    }//check fields are not empty
+
 
     @Override
     public void onChildAdded(DataSnapshot dataSnapshot, String s) {
@@ -165,5 +246,11 @@ public class ServiceJobLogin extends AppCompatActivity implements View.OnClickLi
     @Override
     public void onCancelled(DatabaseError databaseError) {
 
+    }
+
+    @Override
+    public void finish() {
+        super.finish();
+        overridePendingTransition(R.anim.slide_in_left, R.anim.slide_out_right);
     }
 }

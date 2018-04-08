@@ -78,24 +78,44 @@ public class ServiceJobUpdate extends AppCompatActivity implements View.OnClickL
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
 
-                for (DataSnapshot servicesnapshot: dataSnapshot.getChildren()) {
+                if(dataSnapshot.exists()) {
+                    for (DataSnapshot servicesnapshot : dataSnapshot.getChildren()) {
 
-                    String serviceJobNumber = (String) servicesnapshot.child("serviceJobNumber").getValue().toString();
-                    String serviceJobCustomerName = (String) servicesnapshot.child("serviceJobCustomerName").getValue().toString();
-                    String serviceJobCustomerPhone = (String) servicesnapshot.child("serviceJobCustomerPhone").getValue().toString();
-                    String serviceJobNotes = (String) servicesnapshot.child("serviceJobFaultNotes").getValue().toString();
-                    String serviceJobTimeBookedIn = (String) servicesnapshot.child("formattedTimestamp").getValue().toString();
-                    String serviceJobAgentName = (String) servicesnapshot.child("serviceJobUsername").getValue().toString();
-                    tempServiceJob.setserviceDatabaseAutomaticKey(servicesnapshot.getKey());
-                    tempServiceJob.setServiceJobFaultNotes(servicesnapshot.child("serviceJobFaultNotes").getValue().toString());
+                        String serviceJobNumber = (String) servicesnapshot.child("serviceJobNumber").getValue().toString();
+                        String serviceJobCustomerName = (String) servicesnapshot.child("serviceJobCustomerName").getValue().toString();
+                        String serviceJobCustomerPhone = (String) servicesnapshot.child("serviceJobCustomerPhone").getValue().toString();
+                        String serviceJobNotes = (String) servicesnapshot.child("serviceJobFaultNotes").getValue().toString();
+                        String serviceJobTimeBookedIn = (String) servicesnapshot.child("formattedTimestamp").getValue().toString();
+                        String serviceJobAgentName = (String) servicesnapshot.child("serviceJobUsername").getValue().toString();
+                        tempServiceJob.setserviceDatabaseAutomaticKey(servicesnapshot.getKey());
+                        tempServiceJob.setServiceJobFaultNotes(servicesnapshot.child("serviceJobFaultNotes").getValue().toString());
 
-                    textViewServiceJobNumberReturned.setText("Service Job Number: \n" + serviceJobNumber);
-                    textviewServiceJobAgentName.setText("Booked in by: \n" + serviceJobAgentName);
-                    textViewServiceJobCustomerName.setText("Customer Name: \n" + serviceJobCustomerName);
-                    textViewServiceJobCustomerPhone.setText("Customer Phone: \n" + serviceJobCustomerPhone);
-                    textViewServiceJobNotes.setText("Service Job Notes: \n" + serviceJobNotes);
+                        textViewServiceJobNumberReturned.setText("Service Job Number: \n" + serviceJobNumber);
+                        textviewServiceJobAgentName.setText("Booked in by: \n" + serviceJobAgentName);
+                        textViewServiceJobCustomerName.setText("Customer Name: \n" + serviceJobCustomerName);
+                        textViewServiceJobCustomerPhone.setText("Customer Phone: \n" + serviceJobCustomerPhone);
+                        textViewServiceJobNotes.setText("Service Job Notes: \n" + serviceJobNotes);
 
-                    buttonServiceJobAddNotes.setVisibility(View.VISIBLE);
+                        buttonServiceJobAddNotes.setVisibility(View.VISIBLE);
+                    }
+                }
+                else{
+                    DialogInterface.OnClickListener dialogClickListener = new DialogInterface.OnClickListener() {
+                        @Override
+                        public void onClick(DialogInterface dialog, int option) {
+                            switch (option) {
+                                case DialogInterface.BUTTON_POSITIVE:
+                                    //Yes button clicked
+                                    break;
+                                case DialogInterface.BUTTON_NEGATIVE:
+                                    //No button clicked
+                                    break;
+                            }
+                        }
+                    };//dialog listener
+
+                    AlertDialog.Builder fieldAlert = new AlertDialog.Builder(ServiceJobUpdate.this);
+                    fieldAlert.setMessage("Service job not found").setPositiveButton("OK", dialogClickListener).show();
                 }
             }
 
@@ -130,7 +150,7 @@ public class ServiceJobUpdate extends AppCompatActivity implements View.OnClickL
         buttonDialogSubmitNotes.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                if(!editTextDialogNotes.toString().isEmpty()){
+                if(editTextDialogNotes.getText().toString().length() > 10){
 
                     FirebaseUser user = mAuth.getCurrentUser();
                     String username = user.getEmail();
@@ -147,7 +167,7 @@ public class ServiceJobUpdate extends AppCompatActivity implements View.OnClickL
 
                 }
                 else{
-                    Toast.makeText(getApplicationContext(), "Please Add Notes", Toast.LENGTH_LONG).show();
+                    Toast.makeText(getApplicationContext(), "Please add detailed notes", Toast.LENGTH_LONG).show();
                 }
             }
         });//Onclick for submitting notes added
@@ -191,10 +211,56 @@ public class ServiceJobUpdate extends AppCompatActivity implements View.OnClickL
     @Override
     public void onClick(View view) {
         if(view == buttonServiceJobSearch){
-            searchFirebaseServiceJob();
+            if(checkFieldsAreNotEmpty()) {
+                searchFirebaseServiceJob();
+            }
         }
         if(view == buttonServiceJobAddNotes){
             addNotesAfterSearch();
         }
+    }
+
+    public boolean checkFieldsAreNotEmpty(){
+
+        boolean areallempty = false;
+        String dialogMessage = "";
+
+        if(editTextServiceJobNumber.getText().toString().length() > 0){
+            areallempty = true;
+        }
+        else{
+            dialogMessage = "Please enter a service job number to search";
+        }
+
+        if(!areallempty) {
+
+            DialogInterface.OnClickListener dialogClickListener = new DialogInterface.OnClickListener() {
+                @Override
+                public void onClick(DialogInterface dialog, int option) {
+                    switch (option) {
+                        case DialogInterface.BUTTON_POSITIVE:
+                            //Yes button clicked
+                            break;
+                        case DialogInterface.BUTTON_NEGATIVE:
+                            //No button clicked
+                            break;
+                    }
+                }
+            };//dialog listener
+
+            AlertDialog.Builder fieldAlert = new AlertDialog.Builder(this);
+            fieldAlert.setMessage(dialogMessage).setPositiveButton("OK", dialogClickListener).show();
+
+        }//show dialog box if something is empty
+
+        return areallempty;
+
+    }//check fields are not empty
+
+
+    @Override
+    public void finish() {
+        super.finish();
+        overridePendingTransition(R.anim.slide_in_left, R.anim.slide_out_right);
     }
 }

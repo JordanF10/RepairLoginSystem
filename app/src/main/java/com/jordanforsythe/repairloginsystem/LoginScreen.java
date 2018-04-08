@@ -8,6 +8,7 @@ import android.text.TextUtils;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.ImageButton;
 import android.widget.Toast;
 
 import com.google.android.gms.tasks.OnCompleteListener;
@@ -18,7 +19,7 @@ import com.google.firebase.auth.FirebaseAuth;
 public class LoginScreen extends AppCompatActivity implements View.OnClickListener {
 
     private FirebaseAuth mAuth;
-    private Button buttonLogin;
+    private ImageButton buttonLogin;
     private EditText editTextUsername;
     private EditText editTextPassword;
 
@@ -34,11 +35,11 @@ public class LoginScreen extends AppCompatActivity implements View.OnClickListen
 
         if(mAuth.getCurrentUser() != null){
             //take user to home screen if already loged in
-            finish();
             startActivity(new Intent(getApplicationContext(), HomeScreen.class));
+            finish();
         }
 
-        buttonLogin = findViewById(R.id.button_login);
+        buttonLogin = findViewById(R.id.imageButton_login);
         editTextUsername = findViewById(R.id.editText_Username);
         editTextPassword = findViewById(R.id.editText_Password);
 
@@ -67,8 +68,8 @@ public class LoginScreen extends AppCompatActivity implements View.OnClickListen
 
                         if(task.isSuccessful()){
                             //progress to the home screen
-                            finish();
                             startActivity(new Intent(getApplicationContext(), HomeScreen.class));
+                            finish();
                             return;
                         }
 

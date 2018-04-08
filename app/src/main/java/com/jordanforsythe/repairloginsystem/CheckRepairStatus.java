@@ -1,5 +1,6 @@
 package com.jordanforsythe.repairloginsystem;
 
+import android.app.Activity;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.support.v7.app.AlertDialog;
@@ -8,6 +9,7 @@ import android.os.Bundle;
 import android.util.Log;
 import android.view.MenuItem;
 import android.view.View;
+import android.view.inputmethod.InputMethodManager;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.TextView;
@@ -74,41 +76,66 @@ public class CheckRepairStatus extends AppCompatActivity implements View.OnClick
 
         Query firebaseDatabaseQuery = repairs.orderByChild("jobNumber").equalTo(jobNumberTyped);
 
+
+
         firebaseDatabaseQuery.addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
 
-                for (DataSnapshot repairsnapshot: dataSnapshot.getChildren()) {
-                    String jobNumber = (String) repairsnapshot.child("jobNumber").getValue().toString();
-                    String status = (String) repairsnapshot.child("repairStatus").getValue().toString();
-                    String date = (String) repairsnapshot.child("formattedTimestamp").getValue().toString();
-                    String loggedInBy = (String) repairsnapshot.child("loggedInBy").getValue().toString();
-                    String name = (String) repairsnapshot.child("customerName").getValue().toString();
-                    String phone = (String) repairsnapshot.child("customerPhoneNumber").getValue().toString();
-                    String email = (String) repairsnapshot.child("customerEmailAddress").getValue().toString();
-                    String imei = (String) repairsnapshot.child("imeiNumber").getValue().toString();
-                    String fault = (String) repairsnapshot.child("faultDescription").getValue().toString();
-                    String standbyImei = (String) repairsnapshot.child("standbyPhoneIMEI").getValue().toString();
-                    String engineerNotes = (String) repairsnapshot.child("engineerNotes").getValue().toString();
+                if(dataSnapshot.exists()) {
 
-                    textViewJobNumberReturned.setText("Job Number: \n"+jobNumber);
-                    textViewJobStatusReturned.setText("Repair Status: \n"+status);
-                    textViewDateBookedInReturned.setText("Created on: \n"+date);
-                    textViewStatusLoggedInBy.setText("Logged in by: \n" + loggedInBy);
-                    textViewCustomerNameReturned.setText("Customer Name: \n"+name);
-                    textViewCustomerPhoneReturned.setText("Customer Phone: \n"+phone);
-                    textViewCustomerEmailReturned.setText("Customer Email: \n"+email);
-                    textViewCustomerImeiReturned.setText("Handset IMEI: \n"+imei);
-                    textViewCustomerFaultReturned.setText("Reported Fault: \n"+fault);
-                    textViewCustomerStandbyImeiReturned.setText("Standby IMEI: \n"+standbyImei);
+                    for (DataSnapshot repairsnapshot : dataSnapshot.getChildren()) {
+                        String jobNumber = (String) repairsnapshot.child("jobNumber").getValue().toString();
+                        String status = (String) repairsnapshot.child("repairStatus").getValue().toString();
+                        String date = (String) repairsnapshot.child("formattedTimestamp").getValue().toString();
+                        String loggedInBy = (String) repairsnapshot.child("loggedInBy").getValue().toString();
+                        String name = (String) repairsnapshot.child("customerName").getValue().toString();
+                        String phone = (String) repairsnapshot.child("customerPhoneNumber").getValue().toString();
+                        String email = (String) repairsnapshot.child("customerEmailAddress").getValue().toString();
+                        String imei = (String) repairsnapshot.child("imeiNumber").getValue().toString();
+                        String fault = (String) repairsnapshot.child("faultDescription").getValue().toString();
+                        String standbyImei = (String) repairsnapshot.child("standbyPhoneIMEI").getValue().toString();
+                        String engineerNotes = (String) repairsnapshot.child("engineerNotes").getValue().toString();
 
-                    if(engineerNotes.isEmpty()){
-                        textViewEngineerNotesReturned.setText("Engineer Notes: \nNo Engineer notes yet!");
+                        textViewJobNumberReturned.setText("Job Number: \n" + jobNumber);
+                        textViewJobStatusReturned.setText("Repair Status: \n" + status);
+                        textViewDateBookedInReturned.setText("Created on: \n" + date);
+                        textViewStatusLoggedInBy.setText("Logged in by: \n" + loggedInBy);
+                        textViewCustomerNameReturned.setText("Customer Name: \n" + name);
+                        textViewCustomerPhoneReturned.setText("Customer Phone: \n" + phone);
+                        textViewCustomerEmailReturned.setText("Customer Email: \n" + email);
+                        textViewCustomerImeiReturned.setText("Handset IMEI: \n" + imei);
+                        textViewCustomerFaultReturned.setText("Reported Fault: \n" + fault);
+                        textViewCustomerStandbyImeiReturned.setText("Standby IMEI: \n" + standbyImei);
+
+                        if (engineerNotes.isEmpty()) {
+                            textViewEngineerNotesReturned.setText("Engineer Notes: \nNo Engineer notes yet!");
+                        } else {
+                            textViewEngineerNotesReturned.setText("Engineer Notes: \n" + engineerNotes);
+                        }
+
+                        InputMethodManager imm = (InputMethodManager) getSystemService(Activity.INPUT_METHOD_SERVICE);
+                        imm.toggleSoftInput(InputMethodManager.HIDE_IMPLICIT_ONLY, 0);
+
                     }
-                    else{
-                        textViewEngineerNotesReturned.setText("Engineer Notes: \n" + engineerNotes);
-                    }
+                }
+                else{
+                    DialogInterface.OnClickListener dialogClickListener = new DialogInterface.OnClickListener() {
+                        @Override
+                        public void onClick(DialogInterface dialog, int option) {
+                            switch (option) {
+                                case DialogInterface.BUTTON_POSITIVE:
+                                    //Yes button clicked
+                                    break;
+                                case DialogInterface.BUTTON_NEGATIVE:
+                                    //No button clicked
+                                    break;
+                            }
+                        }
+                    };//dialog listener
 
+                    AlertDialog.Builder fieldAlert = new AlertDialog.Builder(CheckRepairStatus.this);
+                    fieldAlert.setMessage("Repair job number not found").setPositiveButton("OK", dialogClickListener).show();
                 }
             }
 
@@ -116,6 +143,7 @@ public class CheckRepairStatus extends AppCompatActivity implements View.OnClick
             public void onCancelled(DatabaseError databaseError) {
                 System.out.println("Database Error");
             }
+
         });
     }
 
@@ -123,10 +151,49 @@ public class CheckRepairStatus extends AppCompatActivity implements View.OnClick
     public void onClick(View view) {
 
         if (view == buttonRepairQuery) {
-            searchFirebase();
+            if(checkFieldsAreNotEmpty()) {
+                searchFirebase();
+            }
         }
 
     }
+
+    public boolean checkFieldsAreNotEmpty(){
+
+        boolean areallempty = false;
+        String dialogMessage = "";
+
+        if(editTextRepairQuery.getText().toString().length() > 0){
+            areallempty = true;
+        }
+        else{
+            dialogMessage = "Please enter a Repair Number";
+        }
+
+        if(!areallempty) {
+
+            DialogInterface.OnClickListener dialogClickListener = new DialogInterface.OnClickListener() {
+                @Override
+                public void onClick(DialogInterface dialog, int option) {
+                    switch (option) {
+                        case DialogInterface.BUTTON_POSITIVE:
+                            //Yes button clicked
+                            break;
+                        case DialogInterface.BUTTON_NEGATIVE:
+                            //No button clicked
+                            break;
+                    }
+                }
+            };//dialog listener
+
+            AlertDialog.Builder fieldAlert = new AlertDialog.Builder(this);
+            fieldAlert.setMessage(dialogMessage).setPositiveButton("OK", dialogClickListener).show();
+
+        }//show dialog box if something is empty
+
+        return areallempty;
+
+    }//check fields are not empty
 
     @Override
     public void onBackPressed(){
@@ -162,4 +229,12 @@ public class CheckRepairStatus extends AppCompatActivity implements View.OnClick
         return true;
     }
 
+    @Override
+    public void finish() {
+        super.finish();
+        overridePendingTransition(R.anim.slide_in_left, R.anim.slide_out_right);
+    }
+
 }
+
+

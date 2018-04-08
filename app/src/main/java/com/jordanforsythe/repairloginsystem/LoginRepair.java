@@ -2,6 +2,7 @@ package com.jordanforsythe.repairloginsystem;
 
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.provider.ContactsContract;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
@@ -10,6 +11,8 @@ import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.ImageButton;
+import android.widget.TextView;
 
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
@@ -95,14 +98,106 @@ public class LoginRepair extends AppCompatActivity implements View.OnClickListen
             System.out.println("REPAIR SENT, Job number was " + String.valueOf(jobNumber) + ", success!" + customerEmail + customerPhone);
 
             repairs.push().setValue(repairToSend);
+
+            final AlertDialog.Builder mBuilder = new AlertDialog.Builder(this);
+            View mView = getLayoutInflater().inflate(R.layout.dialog_repair_logged_in, null);
+            String textForDialog = "Your customers job number is " + jobNumber + ".\nPlease give this to the customer";
+
+            TextView textViewDialogText = mView.findViewById(R.id.textView_RepairNumberSubmitted);
+            ImageButton imageButtonDialogText = mView.findViewById(R.id.imageButton_RepairLoggedInDone);
+
+            textViewDialogText.setText(textForDialog);
+
+            mBuilder.setView(mView);
+            final AlertDialog dialogRepairLoggedIn = mBuilder.create();
+            dialogRepairLoggedIn.show();
+
+            imageButtonDialogText.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                    dialogRepairLoggedIn.dismiss();
+                    startActivity(new Intent(getApplicationContext(), HomeScreen.class));
+                    finish();
+                }
+            });
+
+
         }//Push Repair to Firebase method
 
     @Override
     public void onClick(View view) {
         if(view == buttonSendRepairData){
-            pushRepairToFirebase();
+            if(checkFieldsAreNotEmpty()) {
+                pushRepairToFirebase();
+            }
         }
     }//On click method
+
+    public boolean checkFieldsAreNotEmpty(){
+
+        boolean areallempty = false;
+        String dialogMessage = "";
+
+        if(editTextCustomerName.getText().toString().length() > 0){
+
+            if(editTextCustomerPhone.getText().toString().length() == 11){
+
+                if(editTextCustomerEmail.getText().toString().length() > 0){
+
+                    if(editTextImeiNumber.getText().toString().length() == 15){
+
+                        if(editTextFaultDescription.getText().toString().length() > 20){
+                            areallempty = true;
+                        }
+                        else{
+                            //fault not long enough
+                            dialogMessage = "Please enter a detailed fault note";
+                        }
+                    }//imei
+                    else{
+                        //imei not long enough
+                        dialogMessage = "Please enter a 15 digit IMEI number";
+                    }
+                }//email
+                else{
+                    //email not long enough
+                    dialogMessage = "Please enter a Customer Email";
+                }
+            }//phone
+            else{
+                //phone not long enough
+                dialogMessage = "Please enter a Customer phone number of 11 digits";
+            }
+        }//name
+        else{
+            //name not long enough
+            dialogMessage = "Please enter a Customer Name";
+        }
+
+        if(!areallempty) {
+
+            DialogInterface.OnClickListener dialogClickListener = new DialogInterface.OnClickListener() {
+                @Override
+                public void onClick(DialogInterface dialog, int option) {
+                    switch (option) {
+                        case DialogInterface.BUTTON_POSITIVE:
+                            //Yes button clicked
+                            break;
+                        case DialogInterface.BUTTON_NEGATIVE:
+                            //No button clicked
+                            break;
+                    }
+                }
+            };//dialog listener
+
+            AlertDialog.Builder fieldAlert = new AlertDialog.Builder(this);
+            fieldAlert.setMessage(dialogMessage).setPositiveButton("OK", dialogClickListener).show();
+
+        }//show dialog box if something is empty
+
+        return areallempty;
+
+    }//check fields are not empty
 
     private void queryNextJobNo(){
 
@@ -171,8 +266,8 @@ public class LoginRepair extends AppCompatActivity implements View.OnClickListen
             }
         };//dialog listener
 
-        AlertDialog.Builder builder = new AlertDialog.Builder(this);
-        builder.setMessage("Are you sure you want to exit?").setPositiveButton("Yes", dialogClickListener)
+        AlertDialog.Builder exitAlert = new AlertDialog.Builder(this);
+        exitAlert.setMessage("Are you sure you want to exit?").setPositiveButton("Yes", dialogClickListener)
                 .setNegativeButton("No", dialogClickListener).show();
 
 
@@ -184,4 +279,10 @@ public class LoginRepair extends AppCompatActivity implements View.OnClickListen
         finish();
         return true;
     }//Make menu arrow button work
+
+    @Override
+    public void finish() {
+        super.finish();
+        overridePendingTransition(R.anim.slide_in_left, R.anim.slide_out_right);
+    }
 }

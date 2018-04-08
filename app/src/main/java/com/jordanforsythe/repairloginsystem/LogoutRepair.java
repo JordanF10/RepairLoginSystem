@@ -11,6 +11,8 @@ import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.ImageButton;
+import android.widget.TextView;
 
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
@@ -76,15 +78,9 @@ public class LogoutRepair extends AppCompatActivity implements View.OnClickListe
     public void onClick(View view) {
         if(view == buttonLogoutRepair){
 
-            getRepairJob();
-
-            Handler handler = new Handler();
-            handler.postDelayed(new Runnable() {
-                public void run() {
-                    // Actions to do after 10 seconds
-                    changeRepairToLoggedOut();
-                }
-            }, 1000);
+            if(checkFieldsAreNotEmpty()) {
+                getRepairJob();
+            }
         }
     }
 
@@ -94,14 +90,43 @@ public class LogoutRepair extends AppCompatActivity implements View.OnClickListe
         String repairStatusBefore = tempRepair.getRepairStatus();
 
         if(repairStatusBefore.equals("Logged Out")) {
-            System.out.println("Repair already logged out");
+
+            String dialogTextAlreadyLoggedOut = "Cannot logout, repair already logged out";
+            alreadyLoggedOut(dialogTextAlreadyLoggedOut);
+
         }
         else{
             if(repairStatusBefore.equals("Canceled")) {
-                System.out.println("Repair Canceled, cannot logout");
+
+                String dialogTextCanceled = "Repair canceled, cannot logout.";
+                alreadyLoggedOut(dialogTextCanceled);
+
             }
             else{
                 repairs.child(repairJobKey).child("repairStatus").setValue("Logged Out");
+
+                AlertDialog.Builder mBuilder = new AlertDialog.Builder(this);
+                View mView = getLayoutInflater().inflate(R.layout.dialog_repair_logged_out, null);
+                String textForDialog = "Job logged out";
+
+                TextView textViewDialogText = mView.findViewById(R.id.textView_DialogRepairLoggedOut);
+                ImageButton imageButtonDialogText = mView.findViewById(R.id.imageButton_DialogRepairLoggedOut);
+
+                textViewDialogText.setText(textForDialog);
+
+                mBuilder.setView(mView);
+                final AlertDialog dialogLoggedOut = mBuilder.create();
+                dialogLoggedOut.show();
+
+                imageButtonDialogText.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View view) {
+                        dialogLoggedOut.dismiss();
+                        startActivity(new Intent(getApplicationContext(), HomeScreen.class));
+                        finish();
+                    }
+                });
+
             }
         }
 
@@ -109,8 +134,6 @@ public class LogoutRepair extends AppCompatActivity implements View.OnClickListe
     }
 
     private void getRepairJob(){
-
-        Log.d("OHBABY", "It got to repairjobnumber");
 
         int jobNumberTyped = Integer.parseInt(editTextLogoutRepairNumber.getText().toString());
 
@@ -120,26 +143,119 @@ public class LogoutRepair extends AppCompatActivity implements View.OnClickListe
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
 
-                for (DataSnapshot repairsnapshot: dataSnapshot.getChildren()) {
+                if (dataSnapshot.exists()) {
+                    for (DataSnapshot repairsnapshot : dataSnapshot.getChildren()) {
 
-                    tempRepair.setDatabaseAutomaticKey(repairsnapshot.getKey());
-                    tempRepair.setRepairStatus(repairsnapshot.child("repairStatus").getValue().toString());
+                        tempRepair.setDatabaseAutomaticKey(repairsnapshot.getKey());
+                        tempRepair.setRepairStatus(repairsnapshot.child("repairStatus").getValue().toString());
+                    }
+
+                    Handler handler = new Handler();
+                    handler.postDelayed(new Runnable() {
+                        public void run() {
+                            //after 1 second
+                            changeRepairToLoggedOut();
+                        }
+                    }, 1000);
+                }
+                else{
+                    DialogInterface.OnClickListener dialogClickListener = new DialogInterface.OnClickListener() {
+                        @Override
+                        public void onClick(DialogInterface dialog, int option) {
+                            switch (option) {
+                                case DialogInterface.BUTTON_POSITIVE:
+                                    //Yes button clicked
+                                    break;
+                                case DialogInterface.BUTTON_NEGATIVE:
+                                    //No button clicked
+                                    break;
+                            }
+                        }
+                    };//dialog listener
+
+                    AlertDialog.Builder fieldAlert = new AlertDialog.Builder(LogoutRepair.this);
+                    fieldAlert.setMessage("Repair job not found").setPositiveButton("OK", dialogClickListener).show();
                 }
             }
 
-            @Override
-            public void onCancelled(DatabaseError databaseError) {
-            }
-
+                @Override
+                public void onCancelled (DatabaseError databaseError){
+                }
         });
 
     }//get repair job number
+
+    public boolean checkFieldsAreNotEmpty(){
+
+        boolean areallempty = false;
+        String dialogMessage = "";
+
+        if(editTextLogoutRepairNumber.getText().toString().length() > 0){
+            areallempty = true;
+        }
+        else{
+            dialogMessage = "Please enter a Repair Number to logout";
+        }
+
+        if(!areallempty) {
+
+            DialogInterface.OnClickListener dialogClickListener = new DialogInterface.OnClickListener() {
+                @Override
+                public void onClick(DialogInterface dialog, int option) {
+                    switch (option) {
+                        case DialogInterface.BUTTON_POSITIVE:
+                            //Yes button clicked
+                            break;
+                        case DialogInterface.BUTTON_NEGATIVE:
+                            //No button clicked
+                            break;
+                    }
+                }
+            };//dialog listener
+
+            AlertDialog.Builder fieldAlert = new AlertDialog.Builder(this);
+            fieldAlert.setMessage(dialogMessage).setPositiveButton("OK", dialogClickListener).show();
+
+        }//show dialog box if something is empty
+
+        return areallempty;
+
+    }//check fields are not empty
+
+    private void alreadyLoggedOut(String dialogText){
+
+        AlertDialog.Builder mBuilder = new AlertDialog.Builder(this);
+        View mView = getLayoutInflater().inflate(R.layout.dialog_repair_logged_out, null);
+
+        TextView textViewDialogText = mView.findViewById(R.id.textView_DialogRepairLoggedOut);
+        ImageButton imageButtonDialogText = mView.findViewById(R.id.imageButton_DialogRepairLoggedOut);
+
+        textViewDialogText.setText(dialogText);
+
+        mBuilder.setView(mView);
+        final AlertDialog dialogAlreadyCanceled = mBuilder.create();
+        dialogAlreadyCanceled.show();
+
+        imageButtonDialogText.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                dialogAlreadyCanceled.dismiss();
+            }
+        });
+
+    }
 
     public boolean onOptionsItemSelected(MenuItem item){
         Intent myIntent = new Intent(getApplicationContext(), HomeScreen.class);
         startActivityForResult(myIntent, 0);
         finish();
         return true;
+    }
+
+    @Override
+    public void finish() {
+        super.finish();
+        overridePendingTransition(R.anim.slide_in_left, R.anim.slide_out_right);
     }
 
 

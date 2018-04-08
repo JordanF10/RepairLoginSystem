@@ -1,10 +1,13 @@
 package com.jordanforsythe.repairloginsystem;
 
+import android.content.DialogInterface;
 import android.content.Intent;
+import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.Button;
+import android.widget.ImageButton;
 import android.widget.TextView;
 
 import com.google.firebase.auth.FirebaseAuth;
@@ -15,12 +18,12 @@ public class HomeScreen extends AppCompatActivity implements View.OnClickListene
     private FirebaseAuth mAuth;
     private Button buttonLogout;
     private TextView textviewUsername;
-    private Button buttonLoginRepair;
-    private Button buttonCheckRepair;
-    private Button buttonEngineerScreen;
-    private Button buttonLogoutRepairScreen;
-    private Button buttonServiceJobLogin;
-    private Button buttonServiceJobUpdate;
+    private ImageButton imageButtonLoginRepair;
+    private ImageButton imageButtonCheckRepair;
+    private ImageButton imageButtonEngineerScreen;
+    private ImageButton imageButtonLogoutRepairScreen;
+    private ImageButton imageButtonServiceJobLogin;
+    private ImageButton imageButtonServiceJobUpdate;
 
 
     @Override
@@ -31,8 +34,8 @@ public class HomeScreen extends AppCompatActivity implements View.OnClickListene
         mAuth = FirebaseAuth.getInstance();
 
         if(mAuth.getCurrentUser() == null){
-            finish();
             startActivity(new Intent(this, LoginScreen.class));
+            finish();
         }
 
         FirebaseUser user = mAuth.getCurrentUser();
@@ -41,20 +44,20 @@ public class HomeScreen extends AppCompatActivity implements View.OnClickListene
         textviewUsername.setText("Welcome " + user.getEmail());
 
         buttonLogout = findViewById(R.id.button_Logout);
-        buttonLoginRepair = findViewById(R.id.button_RepairLoginScreen);
-        buttonCheckRepair = findViewById(R.id.button_CheckRepairStatus);
-        buttonEngineerScreen = findViewById(R.id.button_EngineerUpdateScreen);
-        buttonLogoutRepairScreen = findViewById(R.id.button_LogoutRepairActivity);
-        buttonServiceJobLogin = findViewById(R.id.button_ServiceJobLogin);
-        buttonServiceJobUpdate = findViewById(R.id.button_ServiceJobUpdate);
+        imageButtonLoginRepair = findViewById(R.id.imageButton_RepairLoginScreen);
+        imageButtonCheckRepair = findViewById(R.id.imageButton_CheckRepairStatus);
+        imageButtonEngineerScreen = findViewById(R.id.imageButton_EngineerUpdateScreen);
+        imageButtonLogoutRepairScreen = findViewById(R.id.imageButton_LogoutRepairActivity);
+        imageButtonServiceJobLogin = findViewById(R.id.imageButton_ServiceJobLogin);
+        imageButtonServiceJobUpdate = findViewById(R.id.imageButton_ServiceJobUpdate);
 
         buttonLogout.setOnClickListener(this);
-        buttonLoginRepair.setOnClickListener(this);
-        buttonCheckRepair.setOnClickListener(this);
-        buttonEngineerScreen.setOnClickListener(this);
-        buttonLogoutRepairScreen.setOnClickListener(this);
-        buttonServiceJobLogin.setOnClickListener(this);
-        buttonServiceJobUpdate.setOnClickListener(this);
+        imageButtonLoginRepair.setOnClickListener(this);
+        imageButtonCheckRepair.setOnClickListener(this);
+        imageButtonEngineerScreen.setOnClickListener(this);
+        imageButtonLogoutRepairScreen.setOnClickListener(this);
+        imageButtonServiceJobLogin.setOnClickListener(this);
+        imageButtonServiceJobUpdate.setOnClickListener(this);
 
     }
 
@@ -62,35 +65,63 @@ public class HomeScreen extends AppCompatActivity implements View.OnClickListene
     public void onClick(View view) {
         if (view == buttonLogout){
             mAuth.signOut();
-            finish();
             startActivity(new Intent(this, LoginScreen.class));
-        }
-        if (view == buttonLoginRepair){
             finish();
+        }
+        if (view == imageButtonLoginRepair){
             startActivity(new Intent(this, LoginRepair.class));
         }
 
-        if(view == buttonCheckRepair){
-            finish();
+        if(view == imageButtonCheckRepair){
             startActivity(new Intent(this, CheckRepairStatus.class));
         }
 
-        if(view == buttonEngineerScreen){
-            finish();
+        if(view == imageButtonEngineerScreen){
             startActivity(new Intent(this, EngineerScreen.class));
         }
 
-        if(view == buttonLogoutRepairScreen){
+        if(view == imageButtonLogoutRepairScreen){
             startActivity(new Intent(this, LogoutRepair.class));
         }
-        if(view == buttonServiceJobLogin){
+        if(view == imageButtonServiceJobLogin){
             startActivity(new Intent(this, ServiceJobLogin.class));
         }
-        if(view == buttonServiceJobUpdate){
+        if(view == imageButtonServiceJobUpdate){
             startActivity(new Intent(this, ServiceJobUpdate.class));
         }
+    }//onclick
+
+    @Override
+    public void onBackPressed(){
+
+        DialogInterface.OnClickListener dialogClickListener = new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int option) {
+                switch (option){
+                    case DialogInterface.BUTTON_POSITIVE:
+                        //Yes button clicked
+                        mAuth.signOut();
+                        startActivity(new Intent(getApplicationContext(), LoginScreen.class));
+                        finish();
+                        break;
+
+                    case DialogInterface.BUTTON_NEGATIVE:
+                        //No button clicked
+                        break;
+                }
+            }
+        };//dialog listener
+
+        AlertDialog.Builder builder = new AlertDialog.Builder(this);
+        builder.setMessage("Are you sure you want to exit?").setPositiveButton("Yes", dialogClickListener)
+                .setNegativeButton("No", dialogClickListener).show();
 
 
+    }//on back pressed
+
+    @Override
+    public void finish() {
+        super.finish();
+        overridePendingTransition(R.anim.slide_in_left, R.anim.slide_out_right);
     }
-
 }

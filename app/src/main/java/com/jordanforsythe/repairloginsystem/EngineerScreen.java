@@ -11,7 +11,9 @@ import android.view.View;
 import android.webkit.WebView;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.ImageButton;
 import android.widget.Spinner;
+import android.widget.TextView;
 
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
@@ -75,11 +77,31 @@ public class EngineerScreen extends AppCompatActivity implements View.OnClickLis
                 else{
                     repairs.child(repairJobKey).child("engineerNotes").setValue("\n" + "Engineer: " + username + "\n" + formattedDate + "\nNotes: " + editTextEngineerRepairNotes.getText().toString());
                 }
+
+                String dialogText = "Repair Updated";
+                AlertDialog.Builder mBuilder = new AlertDialog.Builder(this);
+                View mView = getLayoutInflater().inflate(R.layout.dialog_repair_logged_out, null);
+
+                TextView textViewDialogText = mView.findViewById(R.id.textView_DialogRepairLoggedOut);
+                ImageButton imageButtonDialogText = mView.findViewById(R.id.imageButton_DialogRepairLoggedOut);
+
+                textViewDialogText.setText(dialogText);
+
+                mBuilder.setView(mView);
+                final AlertDialog dialogEngineerRepairUpdated = mBuilder.create();
+                dialogEngineerRepairUpdated.show();
+
+                imageButtonDialogText.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View view) {
+                        dialogEngineerRepairUpdated.dismiss();
+                        startActivity(new Intent(getApplicationContext(), HomeScreen.class));
+                        finish();
+                    }
+                });
+
             }
 
-            else{
-                System.out.println("key was null");
-            }
 
 
 
@@ -95,13 +117,33 @@ public class EngineerScreen extends AppCompatActivity implements View.OnClickLis
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
 
-                for (DataSnapshot repairsnapshot: dataSnapshot.getChildren()) {
+                if(dataSnapshot.exists()) {
+                    for (DataSnapshot repairsnapshot : dataSnapshot.getChildren()) {
 
-                    tempRepair.setDatabaseAutomaticKey(repairsnapshot.getKey());
+                        tempRepair.setDatabaseAutomaticKey(repairsnapshot.getKey());
 
-                    if(repairsnapshot.child("engineerNotes").getValue() != null) {
-                        tempRepair.setJobNotes(repairsnapshot.child("engineerNotes").getValue().toString());
-                    }//if to check if notes have been added before
+                        if (repairsnapshot.child("engineerNotes").getValue() != null) {
+                            tempRepair.setJobNotes(repairsnapshot.child("engineerNotes").getValue().toString());
+                        }//if to check if notes have been added before
+                    }
+                }
+                else{
+                    DialogInterface.OnClickListener dialogClickListener = new DialogInterface.OnClickListener() {
+                        @Override
+                        public void onClick(DialogInterface dialog, int option) {
+                            switch (option) {
+                                case DialogInterface.BUTTON_POSITIVE:
+                                    //Yes button clicked
+                                    break;
+                                case DialogInterface.BUTTON_NEGATIVE:
+                                    //No button clicked
+                                    break;
+                            }
+                        }
+                    };//dialog listener
+
+                    AlertDialog.Builder fieldAlert = new AlertDialog.Builder(EngineerScreen.this);
+                    fieldAlert.setMessage("Repair job not found").setPositiveButton("OK", dialogClickListener).show();
                 }
             }
 
@@ -143,24 +185,77 @@ public class EngineerScreen extends AppCompatActivity implements View.OnClickLis
 
     @Override
     public void onClick(View view) {
-        if( view == buttonEngineerUpdateRepairSend){
-            tempRepair.setJobNotes("");
-            getRepairJob();
+        if( view == buttonEngineerUpdateRepairSend) {
+            if (checkFieldsAreNotEmpty()) {
+                tempRepair.setJobNotes("");
+                getRepairJob();
 
-            Handler handler = new Handler();
-            handler.postDelayed(new Runnable() {
-                public void run() {
-                    // Actions to do after 10 seconds
-                    sendEngineerUpdateToFirebase();
+
+                if(tempRepair != null) {
+                    Handler handler = new Handler();
+                    handler.postDelayed(new Runnable() {
+                        public void run() {
+                            // Actions to do after 10 seconds
+                            sendEngineerUpdateToFirebase();
+                        }
+                    }, 1000);
                 }
-            }, 1000);
+            }
         }
     }
+
+    public boolean checkFieldsAreNotEmpty(){
+
+        boolean areallempty = false;
+        String dialogMessage = "";
+
+        if(editTextEngineerRepairNumber.getText().toString().length() > 0){
+            if(editTextEngineerRepairNotes.getText().toString().length() > 20) {
+                areallempty = true;
+            }
+            else{
+                dialogMessage="Please enter detailed repair notes";
+            }
+        }
+        else{
+            dialogMessage = "Please enter a Repair Number";
+        }
+
+        if(!areallempty) {
+
+            DialogInterface.OnClickListener dialogClickListener = new DialogInterface.OnClickListener() {
+                @Override
+                public void onClick(DialogInterface dialog, int option) {
+                    switch (option) {
+                        case DialogInterface.BUTTON_POSITIVE:
+                            //Yes button clicked
+                            break;
+                        case DialogInterface.BUTTON_NEGATIVE:
+                            //No button clicked
+                            break;
+                    }
+                }
+            };//dialog listener
+
+            AlertDialog.Builder fieldAlert = new AlertDialog.Builder(this);
+            fieldAlert.setMessage(dialogMessage).setPositiveButton("OK", dialogClickListener).show();
+
+        }//show dialog box if something is empty
+
+        return areallempty;
+
+    }//check fields are not empty
 
     public boolean onOptionsItemSelected(MenuItem item){
         Intent myIntent = new Intent(getApplicationContext(), HomeScreen.class);
         startActivityForResult(myIntent, 0);
         finish();
         return true;
+    }
+
+    @Override
+    public void finish() {
+        super.finish();
+        overridePendingTransition(R.anim.slide_in_left, R.anim.slide_out_right);
     }
 }//class
