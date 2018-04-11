@@ -1,6 +1,43 @@
 <resources>
     <string name="app_name">Repair Login System</string>
     <string name="title_activity_engineer_update_repair">EngineerUpdateRepair</string>
+    <string name="enter_Job_Number">Enter Job Number</string>
+    <string name="search">Search</string>
+    <string name="repair_number">Repair Number</string>
+    <string name="add_engineer_notes">Add Engineer Notes</string>
+    <string name="update_repair">Update Repair</string>
+    <string name="logout">Logout</string>
+    <string name="login_repair">Login Repair</string>
+    <string name="check_repair">Check Repair</string>
+    <string name="engineer_screen">Engineer Screen</string>
+    <string name="service_job_login">Service Job Login</string>
+    <string name="update_service_job">Update Service Job</string>
+    <string name="customer_name">Customer Name</string>
+    <string name="customer_phone_number">Customer Phone Number</string>
+    <string name="customer_email_number">Customer Email Number</string>
+    <string name="imei_number">IMEI Number</string>
+    <string name="fault_with_handset">Fault With Handset</string>
+    <string name="standby_phone_imei_number_optional">Standby Phone IMEI Number (optional)</string>
+    <string name="submit_repair">Submit Repair</string>
+    <string name="login">Login</string>
+    <string name="email">Email</string>
+    <string name="password">Password</string>
+    <string name="logout_repair">Logout Repair Button</string>
+    <string name="enter_repair_number_to_logout">Enter Repair Number to Logout</string>
+    <string name="fault_notes">Fault / Notes</string>
+    <string name="customer_phone">Customer Phone</string>
+    <string name="create_service_job_button">Create Service Job Button</string>
+    <string name="service_job_number">Service Job Number</string>
+    <string name="search_job">Search Job</string>
+    <string name="add_notes_button">Add Notes button</string>
+    <string name="welcome_to_the_repair_login_system">Welcome to the Repair Login System</string>
+    <string name="logo_of_app">Logo of app</string>
+    <string name="enter_job_notes">Enter Job Notes</string>
+    <string name="add_notes">Add Notes</string>
+    <string name="cancel">Cancel</string>
+    <string name="repair_logged_in">Repair Logged In</string>
+    <string name="holder">holder</string>
+    <string name="done_button">Done button</string>
 
     <string-array name="RepairEngineerOptions">
         <item>Logged In</item>

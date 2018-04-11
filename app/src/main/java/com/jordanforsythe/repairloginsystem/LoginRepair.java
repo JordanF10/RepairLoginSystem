@@ -2,17 +2,15 @@ package com.jordanforsythe.repairloginsystem;
 
 import android.content.DialogInterface;
 import android.content.Intent;
-import android.provider.ContactsContract;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
-import android.util.Log;
 import android.view.MenuItem;
 import android.view.View;
-import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageButton;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
@@ -23,7 +21,6 @@ import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.Query;
 import com.google.firebase.database.ValueEventListener;
-import com.jordanforsythe.repairloginsystem.R;
 import com.jordanforsythe.repairloginsystem.Repair.Repair;
 
 public class LoginRepair extends AppCompatActivity implements View.OnClickListener, ChildEventListener {
@@ -32,8 +29,7 @@ public class LoginRepair extends AppCompatActivity implements View.OnClickListen
     FirebaseDatabase firebaseDatabase = FirebaseDatabase.getInstance();
     DatabaseReference repairs = firebaseDatabase.getReference(REPAIR_FIREBASE_KEY);
     private FirebaseAuth mAuth;
-
-    private Button buttonSendRepairData;
+    private ImageButton imageButtonSendRepairData;
     private EditText editTextCustomerName;
     private EditText editTextImeiNumber;
     private EditText editTextFaultDescription;
@@ -41,8 +37,6 @@ public class LoginRepair extends AppCompatActivity implements View.OnClickListen
     private EditText editTextCustomerEmail;
     private EditText editTextStandbyPhoneImei;
     private int nextRepairJobNumber;
-    private int jobNumber;
-    private String repairStatusLoggedIn = "Logged In";
     private Repair tempRepair = new Repair();
 
 
@@ -51,10 +45,17 @@ public class LoginRepair extends AppCompatActivity implements View.OnClickListen
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_login_repair);
+
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+        getSupportActionBar().setTitle("Login Repair");
         mAuth = FirebaseAuth.getInstance();
 
-        buttonSendRepairData = findViewById(R.id.button_SendRepairLogin);
+        if(mAuth.getCurrentUser() == null){
+            startActivity(new Intent(this, LoginScreen.class));
+            finish();
+        }
+
+        imageButtonSendRepairData = findViewById(R.id.imageButton_SendRepairLogin);
         editTextCustomerName = findViewById(R.id.editText_CustomerName);
         editTextImeiNumber = findViewById(R.id.editText_ImeiNumber);
         editTextFaultDescription = findViewById(R.id.editText_FaultDescription);
@@ -64,7 +65,7 @@ public class LoginRepair extends AppCompatActivity implements View.OnClickListen
 
         queryNextJobNo();
 
-        buttonSendRepairData.setOnClickListener(this);
+        imageButtonSendRepairData.setOnClickListener(this);
 
         repairs.addChildEventListener(this);
 
@@ -72,7 +73,9 @@ public class LoginRepair extends AppCompatActivity implements View.OnClickListen
 
     private void pushRepairToFirebase(){
 
-            jobNumber = tempRepair.getJobNumber();
+        try {
+
+            int jobNumber = tempRepair.getJobNumber();
 
             String customerName = editTextCustomerName.getText().toString();
             String customerPhone = editTextCustomerPhone.getText().toString();
@@ -84,10 +87,11 @@ public class LoginRepair extends AppCompatActivity implements View.OnClickListen
             String engineerNotes = "";
             FirebaseUser user = mAuth.getCurrentUser();
             String username = user.getEmail();
+            String repairStatusLoggedIn = "Logged In";
 
             String standbyPhoneIMEI = editTextStandbyPhoneImei.getText().toString();
 
-            if(standbyPhoneIMEI.isEmpty()) {
+            if (standbyPhoneIMEI.isEmpty()) {
                 standbyPhoneIMEI = "No standby given";
             }
 
@@ -120,13 +124,16 @@ public class LoginRepair extends AppCompatActivity implements View.OnClickListen
                     finish();
                 }
             });
-
+        }
+        catch (Exception e){
+            Toast.makeText(this,"ERROR: Unable to send repair to firebase",Toast.LENGTH_LONG).show();
+        }
 
         }//Push Repair to Firebase method
 
     @Override
     public void onClick(View view) {
-        if(view == buttonSendRepairData){
+        if(view == imageButtonSendRepairData){
             if(checkFieldsAreNotEmpty()) {
                 pushRepairToFirebase();
             }
@@ -203,22 +210,29 @@ public class LoginRepair extends AppCompatActivity implements View.OnClickListen
 
         Query firebaseDatabaseQuery = repairs.orderByChild("jobNumber").limitToLast(1);
 
-        firebaseDatabaseQuery.addValueEventListener(new ValueEventListener() {
-            @Override
-            public void onDataChange(DataSnapshot dataSnapshot) {
+        try {
 
-                for (DataSnapshot repairsnapshot: dataSnapshot.getChildren()) {
+            firebaseDatabaseQuery.addValueEventListener(new ValueEventListener() {
+                @Override
+                public void onDataChange(DataSnapshot dataSnapshot) {
+
+                    for (DataSnapshot repairsnapshot : dataSnapshot.getChildren()) {
 
                         String jobNumber = (String) repairsnapshot.child("jobNumber").getValue().toString();
                         nextRepairJobNumber = (Integer.parseInt(jobNumber));
                         tempRepair.setJobNumber(nextRepairJobNumber);
+                    }
                 }
-            }
-            @Override
-            public void onCancelled(DatabaseError databaseError) {
-            }
 
-        });//Query for the job
+                @Override
+                public void onCancelled(DatabaseError databaseError) {
+                }
+
+            });//Query for the job
+        }
+        catch (Exception e){
+            Toast.makeText(this,"ERROR: Unable to generate job number",Toast.LENGTH_LONG).show();
+        }
     }//Query next job number method
 
     @Override
@@ -284,5 +298,13 @@ public class LoginRepair extends AppCompatActivity implements View.OnClickListen
     public void finish() {
         super.finish();
         overridePendingTransition(R.anim.slide_in_left, R.anim.slide_out_right);
+    }
+
+    @Override
+    protected void onRestart() {
+        super.onRestart();
+        mAuth.signOut();
+        startActivity(new Intent(this, LoginScreen.class));
+        finish();
     }
 }

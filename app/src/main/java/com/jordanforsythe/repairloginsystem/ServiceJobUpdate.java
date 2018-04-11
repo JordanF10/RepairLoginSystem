@@ -1,15 +1,17 @@
 package com.jordanforsythe.repairloginsystem;
 
+import android.app.Activity;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
-import android.view.LayoutInflater;
 import android.view.MenuItem;
 import android.view.View;
+import android.view.inputmethod.InputMethodManager;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.ImageButton;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -23,10 +25,6 @@ import com.google.firebase.database.Query;
 import com.google.firebase.database.ValueEventListener;
 import com.jordanforsythe.repairloginsystem.ServiceJob.ServiceJob;
 
-import org.w3c.dom.Text;
-
-import static android.view.View.GONE;
-
 public class ServiceJobUpdate extends AppCompatActivity implements View.OnClickListener {
 
     public static final String REPAIR_FIREBASE_KEY_SERVICE = "serviceJobs";
@@ -34,8 +32,8 @@ public class ServiceJobUpdate extends AppCompatActivity implements View.OnClickL
     DatabaseReference serviceJobs = firebaseDatabase.getReference(REPAIR_FIREBASE_KEY_SERVICE);
     private FirebaseAuth mAuth;
 
-    private Button buttonServiceJobSearch;
-    private Button buttonServiceJobAddNotes;
+    private ImageButton imageButtonServiceJobSearch;
+    private ImageButton imageButtonServiceJobAddNotes;
     private EditText editTextServiceJobNumber;
     private TextView textViewServiceJobNumberReturned;
     private TextView textViewServiceJobCustomerName;
@@ -49,10 +47,16 @@ public class ServiceJobUpdate extends AppCompatActivity implements View.OnClickL
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_service_job_update);
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+        getSupportActionBar().setTitle("Update Service Job");
         mAuth = FirebaseAuth.getInstance();
 
-        buttonServiceJobSearch = findViewById(R.id.button_ServiceJobSearch);
-        buttonServiceJobAddNotes = findViewById(R.id.button_ServiceJobAddNotes);
+        if(mAuth.getCurrentUser() == null){
+            startActivity(new Intent(this, LoginScreen.class));
+            finish();
+        }
+
+        imageButtonServiceJobSearch = findViewById(R.id.imageButton_ServiceJobSearch);
+        imageButtonServiceJobAddNotes = findViewById(R.id.imageButton_ServiceJobAddNotes);
         editTextServiceJobNumber = findViewById(R.id.editText_ServiceJobSerach);
         textViewServiceJobCustomerName = findViewById(R.id.textView_ServiceJobCustomerName);
         textViewServiceJobCustomerPhone = findViewById(R.id.textView_ServiceJobCustomerPhone);
@@ -61,69 +65,76 @@ public class ServiceJobUpdate extends AppCompatActivity implements View.OnClickL
         textviewServiceJobAgentName = findViewById(R.id.textView_ServiceJobAgentName);
 
 
-        buttonServiceJobSearch.setOnClickListener(this);
-        buttonServiceJobAddNotes.setOnClickListener(this);
+        imageButtonServiceJobSearch.setOnClickListener(this);
+        imageButtonServiceJobAddNotes.setOnClickListener(this);
 
-        buttonServiceJobAddNotes.setVisibility(View.GONE);
+        imageButtonServiceJobAddNotes.setVisibility(View.GONE);
 
     }
 
     private void searchFirebaseServiceJob() {
 
-        int serviceJobNumberTyped = Integer.parseInt(editTextServiceJobNumber.getText().toString());
+        try {
+            int serviceJobNumberTyped = Integer.parseInt(editTextServiceJobNumber.getText().toString());
 
-        Query firebaseDatabaseQuery = serviceJobs.orderByChild("serviceJobNumber").equalTo(serviceJobNumberTyped);
+            Query firebaseDatabaseQuery = serviceJobs.orderByChild("serviceJobNumber").equalTo(serviceJobNumberTyped);
 
-        firebaseDatabaseQuery.addValueEventListener(new ValueEventListener() {
-            @Override
-            public void onDataChange(DataSnapshot dataSnapshot) {
+            firebaseDatabaseQuery.addValueEventListener(new ValueEventListener() {
+                @Override
+                public void onDataChange(DataSnapshot dataSnapshot) {
 
-                if(dataSnapshot.exists()) {
-                    for (DataSnapshot servicesnapshot : dataSnapshot.getChildren()) {
+                    if (dataSnapshot.exists()) {
+                        for (DataSnapshot servicesnapshot : dataSnapshot.getChildren()) {
 
-                        String serviceJobNumber = (String) servicesnapshot.child("serviceJobNumber").getValue().toString();
-                        String serviceJobCustomerName = (String) servicesnapshot.child("serviceJobCustomerName").getValue().toString();
-                        String serviceJobCustomerPhone = (String) servicesnapshot.child("serviceJobCustomerPhone").getValue().toString();
-                        String serviceJobNotes = (String) servicesnapshot.child("serviceJobFaultNotes").getValue().toString();
-                        String serviceJobTimeBookedIn = (String) servicesnapshot.child("formattedTimestamp").getValue().toString();
-                        String serviceJobAgentName = (String) servicesnapshot.child("serviceJobUsername").getValue().toString();
-                        tempServiceJob.setserviceDatabaseAutomaticKey(servicesnapshot.getKey());
-                        tempServiceJob.setServiceJobFaultNotes(servicesnapshot.child("serviceJobFaultNotes").getValue().toString());
+                            String serviceJobNumber = (String) servicesnapshot.child("serviceJobNumber").getValue().toString();
+                            String serviceJobCustomerName = (String) servicesnapshot.child("serviceJobCustomerName").getValue().toString();
+                            String serviceJobCustomerPhone = (String) servicesnapshot.child("serviceJobCustomerPhone").getValue().toString();
+                            String serviceJobNotes = (String) servicesnapshot.child("serviceJobFaultNotes").getValue().toString();
+                            String serviceJobTimeBookedIn = (String) servicesnapshot.child("formattedTimestamp").getValue().toString();
+                            String serviceJobAgentName = (String) servicesnapshot.child("serviceJobUsername").getValue().toString();
+                            tempServiceJob.setserviceDatabaseAutomaticKey(servicesnapshot.getKey());
+                            tempServiceJob.setServiceJobFaultNotes(servicesnapshot.child("serviceJobFaultNotes").getValue().toString());
 
-                        textViewServiceJobNumberReturned.setText("Service Job Number: \n" + serviceJobNumber);
-                        textviewServiceJobAgentName.setText("Booked in by: \n" + serviceJobAgentName);
-                        textViewServiceJobCustomerName.setText("Customer Name: \n" + serviceJobCustomerName);
-                        textViewServiceJobCustomerPhone.setText("Customer Phone: \n" + serviceJobCustomerPhone);
-                        textViewServiceJobNotes.setText("Service Job Notes: \n" + serviceJobNotes);
+                            textViewServiceJobNumberReturned.setText("Service Job Number: \n" + serviceJobNumber);
+                            textviewServiceJobAgentName.setText("Booked in by: \n" + serviceJobAgentName);
+                            textViewServiceJobCustomerName.setText("Customer Name: \n" + serviceJobCustomerName);
+                            textViewServiceJobCustomerPhone.setText("Customer Phone: \n" + serviceJobCustomerPhone);
+                            textViewServiceJobNotes.setText("Service Job Notes: \n" + serviceJobNotes);
 
-                        buttonServiceJobAddNotes.setVisibility(View.VISIBLE);
+                            imageButtonServiceJobAddNotes.setVisibility(View.VISIBLE);
+
+                            InputMethodManager imm = (InputMethodManager) getSystemService(Activity.INPUT_METHOD_SERVICE);
+                            imm.toggleSoftInput(InputMethodManager.HIDE_IMPLICIT_ONLY, 0);
+                        }
+                    } else {
+                        DialogInterface.OnClickListener dialogClickListener = new DialogInterface.OnClickListener() {
+                            @Override
+                            public void onClick(DialogInterface dialog, int option) {
+                                switch (option) {
+                                    case DialogInterface.BUTTON_POSITIVE:
+                                        //Yes button clicked
+                                        break;
+                                    case DialogInterface.BUTTON_NEGATIVE:
+                                        //No button clicked
+                                        break;
+                                }
+                            }
+                        };//dialog listener
+
+                        AlertDialog.Builder fieldAlert = new AlertDialog.Builder(ServiceJobUpdate.this);
+                        fieldAlert.setMessage("Service job not found").setPositiveButton("OK", dialogClickListener).show();
                     }
                 }
-                else{
-                    DialogInterface.OnClickListener dialogClickListener = new DialogInterface.OnClickListener() {
-                        @Override
-                        public void onClick(DialogInterface dialog, int option) {
-                            switch (option) {
-                                case DialogInterface.BUTTON_POSITIVE:
-                                    //Yes button clicked
-                                    break;
-                                case DialogInterface.BUTTON_NEGATIVE:
-                                    //No button clicked
-                                    break;
-                            }
-                        }
-                    };//dialog listener
 
-                    AlertDialog.Builder fieldAlert = new AlertDialog.Builder(ServiceJobUpdate.this);
-                    fieldAlert.setMessage("Service job not found").setPositiveButton("OK", dialogClickListener).show();
+                @Override
+                public void onCancelled(DatabaseError databaseError) {
+                    System.out.println("Database Error");
                 }
-            }
-
-            @Override
-            public void onCancelled(DatabaseError databaseError) {
-                System.out.println("Database Error");
-            }
-        });
+            });
+        }
+        catch (Exception e){
+            Toast.makeText(this,"ERROR: Unable to get service job",Toast.LENGTH_LONG).show();
+        }
     }//search firebase for job
 
     private void addNotesAfterSearch(){
@@ -152,18 +163,23 @@ public class ServiceJobUpdate extends AppCompatActivity implements View.OnClickL
             public void onClick(View view) {
                 if(editTextDialogNotes.getText().toString().length() > 10){
 
-                    FirebaseUser user = mAuth.getCurrentUser();
-                    String username = user.getEmail();
-                    String serviceJobKey = tempServiceJob.getserviceDatabaseAutomaticKey();
-                    long currentDate = System.currentTimeMillis();
-                    tempServiceJob.setServiceJobtimeDateBookedIn(currentDate);
-                    String formattedDate = tempServiceJob.getFormattedTimestamp();
-                    String newFaultNotes = editTextDialogNotes.getText().toString();
-                    String oldFaultNotes = tempServiceJob.getServiceJobFaultNotes();
+                    try {
+                        FirebaseUser user = mAuth.getCurrentUser();
+                        String username = user.getEmail();
+                        String serviceJobKey = tempServiceJob.getserviceDatabaseAutomaticKey();
+                        long currentDate = System.currentTimeMillis();
+                        tempServiceJob.setServiceJobtimeDateBookedIn(currentDate);
+                        String formattedDate = tempServiceJob.getFormattedTimestamp();
+                        String newFaultNotes = editTextDialogNotes.getText().toString();
+                        String oldFaultNotes = tempServiceJob.getServiceJobFaultNotes();
 
-                    serviceJobs.child(serviceJobKey).child("serviceJobFaultNotes").setValue(oldFaultNotes + "\n\nAgent: " + username + "\n" + formattedDate + "\nNotes: " + newFaultNotes);
+                        serviceJobs.child(serviceJobKey).child("serviceJobFaultNotes").setValue(oldFaultNotes + "\n\nAgent: " + username + "\n" + formattedDate + "\nNotes: " + newFaultNotes);
 
-                    dialog.hide();
+                        dialog.hide();
+                    }
+                    catch (Exception e){
+                        Toast.makeText(getApplicationContext(),"ERROR: Unable to update notes",Toast.LENGTH_LONG).show();
+                    }
 
                 }
                 else{
@@ -210,12 +226,12 @@ public class ServiceJobUpdate extends AppCompatActivity implements View.OnClickL
 
     @Override
     public void onClick(View view) {
-        if(view == buttonServiceJobSearch){
+        if(view == imageButtonServiceJobSearch){
             if(checkFieldsAreNotEmpty()) {
                 searchFirebaseServiceJob();
             }
         }
-        if(view == buttonServiceJobAddNotes){
+        if(view == imageButtonServiceJobAddNotes){
             addNotesAfterSearch();
         }
     }
@@ -263,4 +279,19 @@ public class ServiceJobUpdate extends AppCompatActivity implements View.OnClickL
         super.finish();
         overridePendingTransition(R.anim.slide_in_left, R.anim.slide_out_right);
     }
+
+    @Override
+    protected void onRestart() {
+        super.onRestart();
+        mAuth.signOut();
+        startActivity(new Intent(this, LoginScreen.class));
+        finish();
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+    }
+
+
 }

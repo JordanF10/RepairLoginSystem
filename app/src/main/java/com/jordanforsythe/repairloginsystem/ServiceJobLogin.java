@@ -7,10 +7,10 @@ import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.view.MenuItem;
 import android.view.View;
-import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageButton;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
@@ -23,9 +23,6 @@ import com.google.firebase.database.Query;
 import com.google.firebase.database.ValueEventListener;
 import com.jordanforsythe.repairloginsystem.ServiceJob.ServiceJob;
 
-import java.nio.file.FileVisitResult;
-import java.sql.BatchUpdateException;
-
 public class ServiceJobLogin extends AppCompatActivity implements View.OnClickListener, ChildEventListener {
 
     public static final String REPAIR_FIREBASE_KEY_SERVICE = "serviceJobs";
@@ -36,7 +33,7 @@ public class ServiceJobLogin extends AppCompatActivity implements View.OnClickLi
     private EditText editTextServiceJobCustomerName;
     private EditText editTextServiceJobCustomerPhone;
     private EditText editTextServiceJobFaultNotes;
-    private Button buttonServiceJobCreate;
+    private ImageButton imageButtonServiceJobCreate;
     private int nextServiceJobNumber;
     private ServiceJob tempServiceJob = new ServiceJob();
 
@@ -45,41 +42,51 @@ public class ServiceJobLogin extends AppCompatActivity implements View.OnClickLi
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_service_job_login);
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+        getSupportActionBar().setTitle("Login Service Job");
         mAuth = FirebaseAuth.getInstance();
+
+        if(mAuth.getCurrentUser() == null){
+            startActivity(new Intent(this, LoginScreen.class));
+            finish();
+        }
 
         editTextServiceJobCustomerName = findViewById(R.id.editText_ServiceJobCustomerName);
         editTextServiceJobCustomerPhone = findViewById(R.id.editText_ServiceJobCustomerPhone);
         editTextServiceJobFaultNotes = findViewById(R.id.editText_ServiceJobFault);
-        buttonServiceJobCreate = findViewById(R.id.button_ServiceJobCreate);
+        imageButtonServiceJobCreate = findViewById(R.id.imageButton_ServiceJobCreate);
 
         queryNextJobNo();
 
-        buttonServiceJobCreate.setOnClickListener(this);
+        imageButtonServiceJobCreate.setOnClickListener(this);
 
         serviceJobs.addChildEventListener(this);
 
     }
 
     private void pushServiceJobToFirebase(){
+        try {
+            int serviceJobNumber = tempServiceJob.getServiceJobNumber();
 
-        int serviceJobNumber = tempServiceJob.getServiceJobNumber();
+            String customerName = editTextServiceJobCustomerName.getText().toString();
+            String customerPhone = editTextServiceJobCustomerPhone.getText().toString();
+            long currentDate = System.currentTimeMillis();
+            serviceJobNumber++;
+            FirebaseUser user = mAuth.getCurrentUser();
+            String username = user.getEmail();
 
-        String customerName = editTextServiceJobCustomerName.getText().toString();
-        String customerPhone = editTextServiceJobCustomerPhone.getText().toString();
-        long currentDate = System.currentTimeMillis();
-        serviceJobNumber++;
-        FirebaseUser user = mAuth.getCurrentUser();
-        String username = user.getEmail();
+            tempServiceJob.setServiceJobtimeDateBookedIn(currentDate);
+            String datetime = tempServiceJob.getFormattedTimestamp();
+            String serviceFault = ("\nAgent: " + username + "\n" + datetime + "\nNotes: " + editTextServiceJobFaultNotes.getText().toString());
 
-        tempServiceJob.setServiceJobtimeDateBookedIn(currentDate);
-        String datetime = tempServiceJob.getFormattedTimestamp();
-        String serviceFault = ("\nAgent: " + username + "\n" + datetime + "\nNotes: " + editTextServiceJobFaultNotes.getText().toString());
+            ServiceJob serviceJobToSend = new ServiceJob(customerName, customerPhone, serviceFault, serviceJobNumber, currentDate, username);
 
-        ServiceJob serviceJobToSend = new ServiceJob(customerName, customerPhone, serviceFault, serviceJobNumber, currentDate, username);
+            serviceJobs.push().setValue(serviceJobToSend);
 
-        serviceJobs.push().setValue(serviceJobToSend);
-
-        showDialogAfterSubmitted(String.valueOf(serviceJobNumber));
+            showDialogAfterSubmitted(String.valueOf(serviceJobNumber));
+        }
+        catch (Exception e){
+            Toast.makeText(this,"ERROR: Unable to send service job",Toast.LENGTH_LONG).show();
+        }
 
     }
 
@@ -87,22 +94,28 @@ public class ServiceJobLogin extends AppCompatActivity implements View.OnClickLi
 
         Query firebaseDatabaseQuery = serviceJobs.orderByChild("serviceJobNumber").limitToLast(1);
 
-        firebaseDatabaseQuery.addValueEventListener(new ValueEventListener() {
-            @Override
-            public void onDataChange(DataSnapshot dataSnapshot) {
+        try {
+            firebaseDatabaseQuery.addValueEventListener(new ValueEventListener() {
+                @Override
+                public void onDataChange(DataSnapshot dataSnapshot) {
 
-                for (DataSnapshot servicesnapshot: dataSnapshot.getChildren()) {
+                    for (DataSnapshot servicesnapshot : dataSnapshot.getChildren()) {
 
-                    String serviceJobNumber = (String) servicesnapshot.child("serviceJobNumber").getValue().toString();
-                    nextServiceJobNumber = (Integer.parseInt(serviceJobNumber));
-                    tempServiceJob.setServiceJobNumber(nextServiceJobNumber);
+                        String serviceJobNumber = (String) servicesnapshot.child("serviceJobNumber").getValue().toString();
+                        nextServiceJobNumber = (Integer.parseInt(serviceJobNumber));
+                        tempServiceJob.setServiceJobNumber(nextServiceJobNumber);
+                    }
                 }
-            }
-            @Override
-            public void onCancelled(DatabaseError databaseError) {
-            }
 
-        });//Query for the job
+                @Override
+                public void onCancelled(DatabaseError databaseError) {
+                }
+
+            });//Query for the job
+        }
+        catch (Exception e){
+            Toast.makeText(this,"ERROR: Unable to generate service job number",Toast.LENGTH_LONG).show();
+        }
     }//Query next job number method
 
     private void showDialogAfterSubmitted(String serviceJobNumber) {
@@ -134,7 +147,7 @@ public class ServiceJobLogin extends AppCompatActivity implements View.OnClickLi
 
     @Override
     public void onClick(View view) {
-        if(view == buttonServiceJobCreate){
+        if(view == imageButtonServiceJobCreate){
             if(checkFieldsAreNotEmpty()) {
                 pushServiceJobToFirebase();
             }
@@ -252,5 +265,13 @@ public class ServiceJobLogin extends AppCompatActivity implements View.OnClickLi
     public void finish() {
         super.finish();
         overridePendingTransition(R.anim.slide_in_left, R.anim.slide_out_right);
+    }
+
+    @Override
+    protected void onRestart() {
+        super.onRestart();
+        mAuth.signOut();
+        startActivity(new Intent(this, LoginScreen.class));
+        finish();
     }
 }

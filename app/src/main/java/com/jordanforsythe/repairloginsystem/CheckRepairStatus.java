@@ -12,8 +12,11 @@ import android.view.View;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.ImageButton;
 import android.widget.TextView;
+import android.widget.Toast;
 
+import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
@@ -27,11 +30,9 @@ public class CheckRepairStatus extends AppCompatActivity implements View.OnClick
     public static final String REPAIR_FIREBASE_KEY = "repairs";
     FirebaseDatabase firebaseDatabase = FirebaseDatabase.getInstance();
     DatabaseReference repairs = firebaseDatabase.getReference(REPAIR_FIREBASE_KEY);
-
-
+    FirebaseAuth mAuth;
     private EditText editTextRepairQuery;
-    private Button buttonRepairQuery;
-    private Repair tempRepair = new Repair();
+    private ImageButton imageButtonRepairQuery;
     private TextView textViewJobNumberReturned;
     private TextView textViewJobStatusReturned;
     private TextView textViewDateBookedInReturned;
@@ -51,9 +52,17 @@ public class CheckRepairStatus extends AppCompatActivity implements View.OnClick
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_check_repair_status);
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+        getSupportActionBar().setTitle("Check Repair");
+
+        mAuth = FirebaseAuth.getInstance();
+
+        if(mAuth.getCurrentUser() == null){
+            startActivity(new Intent(this, LoginScreen.class));
+            finish();
+        }
 
         editTextRepairQuery = findViewById(R.id.editText_RepairQuery);
-        buttonRepairQuery = findViewById(R.id.button_RepairQuery);
+        imageButtonRepairQuery = findViewById(R.id.imageButton_RepairQuery);
         textViewJobNumberReturned = findViewById(R.id.textView_StatusJobNumber);
         textViewJobStatusReturned = findViewById(R.id.textView_StatusCurrent);
         textViewDateBookedInReturned = findViewById(R.id.textView_StatusDateBookedIn);
@@ -67,7 +76,7 @@ public class CheckRepairStatus extends AppCompatActivity implements View.OnClick
         textViewStatusLoggedInBy = findViewById(R.id.textView_StatusLoggedInBy);
 
 
-        buttonRepairQuery.setOnClickListener(this);
+        imageButtonRepairQuery.setOnClickListener(this);
     }
 
     private void searchFirebase() {
@@ -76,81 +85,85 @@ public class CheckRepairStatus extends AppCompatActivity implements View.OnClick
 
         Query firebaseDatabaseQuery = repairs.orderByChild("jobNumber").equalTo(jobNumberTyped);
 
+        try {
 
+            firebaseDatabaseQuery.addValueEventListener(new ValueEventListener() {
+                @Override
+                public void onDataChange(DataSnapshot dataSnapshot) {
 
-        firebaseDatabaseQuery.addValueEventListener(new ValueEventListener() {
-            @Override
-            public void onDataChange(DataSnapshot dataSnapshot) {
+                    if (dataSnapshot.exists()) {
 
-                if(dataSnapshot.exists()) {
+                        for (DataSnapshot repairsnapshot : dataSnapshot.getChildren()) {
+                            String jobNumber = (String) repairsnapshot.child("jobNumber").getValue().toString();
+                            String status = (String) repairsnapshot.child("repairStatus").getValue().toString();
+                            String date = (String) repairsnapshot.child("formattedTimestamp").getValue().toString();
+                            String loggedInBy = (String) repairsnapshot.child("loggedInBy").getValue().toString();
+                            String name = (String) repairsnapshot.child("customerName").getValue().toString();
+                            String phone = (String) repairsnapshot.child("customerPhoneNumber").getValue().toString();
+                            String email = (String) repairsnapshot.child("customerEmailAddress").getValue().toString();
+                            String imei = (String) repairsnapshot.child("imeiNumber").getValue().toString();
+                            String fault = (String) repairsnapshot.child("faultDescription").getValue().toString();
+                            String standbyImei = (String) repairsnapshot.child("standbyPhoneIMEI").getValue().toString();
+                            String engineerNotes = (String) repairsnapshot.child("engineerNotes").getValue().toString();
 
-                    for (DataSnapshot repairsnapshot : dataSnapshot.getChildren()) {
-                        String jobNumber = (String) repairsnapshot.child("jobNumber").getValue().toString();
-                        String status = (String) repairsnapshot.child("repairStatus").getValue().toString();
-                        String date = (String) repairsnapshot.child("formattedTimestamp").getValue().toString();
-                        String loggedInBy = (String) repairsnapshot.child("loggedInBy").getValue().toString();
-                        String name = (String) repairsnapshot.child("customerName").getValue().toString();
-                        String phone = (String) repairsnapshot.child("customerPhoneNumber").getValue().toString();
-                        String email = (String) repairsnapshot.child("customerEmailAddress").getValue().toString();
-                        String imei = (String) repairsnapshot.child("imeiNumber").getValue().toString();
-                        String fault = (String) repairsnapshot.child("faultDescription").getValue().toString();
-                        String standbyImei = (String) repairsnapshot.child("standbyPhoneIMEI").getValue().toString();
-                        String engineerNotes = (String) repairsnapshot.child("engineerNotes").getValue().toString();
+                            textViewJobNumberReturned.setText("Job Number: \n" + jobNumber);
+                            textViewJobStatusReturned.setText("Repair Status: \n" + status);
+                            textViewDateBookedInReturned.setText("Created on: \n" + date);
+                            textViewStatusLoggedInBy.setText("Logged in by: \n" + loggedInBy);
+                            textViewCustomerNameReturned.setText("Customer Name: \n" + name);
+                            textViewCustomerPhoneReturned.setText("Customer Phone: \n" + phone);
+                            textViewCustomerEmailReturned.setText("Customer Email: \n" + email);
+                            textViewCustomerImeiReturned.setText("Handset IMEI: \n" + imei);
+                            textViewCustomerFaultReturned.setText("Reported Fault: \n" + fault);
+                            textViewCustomerStandbyImeiReturned.setText("Standby IMEI: \n" + standbyImei);
 
-                        textViewJobNumberReturned.setText("Job Number: \n" + jobNumber);
-                        textViewJobStatusReturned.setText("Repair Status: \n" + status);
-                        textViewDateBookedInReturned.setText("Created on: \n" + date);
-                        textViewStatusLoggedInBy.setText("Logged in by: \n" + loggedInBy);
-                        textViewCustomerNameReturned.setText("Customer Name: \n" + name);
-                        textViewCustomerPhoneReturned.setText("Customer Phone: \n" + phone);
-                        textViewCustomerEmailReturned.setText("Customer Email: \n" + email);
-                        textViewCustomerImeiReturned.setText("Handset IMEI: \n" + imei);
-                        textViewCustomerFaultReturned.setText("Reported Fault: \n" + fault);
-                        textViewCustomerStandbyImeiReturned.setText("Standby IMEI: \n" + standbyImei);
+                            if (engineerNotes.isEmpty()) {
+                                textViewEngineerNotesReturned.setText("Engineer Notes: \nNo Engineer notes yet!");
+                            } else {
+                                textViewEngineerNotesReturned.setText("Engineer Notes: \n" + engineerNotes);
+                            }
 
-                        if (engineerNotes.isEmpty()) {
-                            textViewEngineerNotesReturned.setText("Engineer Notes: \nNo Engineer notes yet!");
-                        } else {
-                            textViewEngineerNotesReturned.setText("Engineer Notes: \n" + engineerNotes);
+                            InputMethodManager imm = (InputMethodManager) getSystemService(Activity.INPUT_METHOD_SERVICE);
+                            imm.toggleSoftInput(InputMethodManager.HIDE_IMPLICIT_ONLY, 0);
+
                         }
+                    } else {
+                        DialogInterface.OnClickListener dialogClickListener = new DialogInterface.OnClickListener() {
+                            @Override
+                            public void onClick(DialogInterface dialog, int option) {
+                                switch (option) {
+                                    case DialogInterface.BUTTON_POSITIVE:
+                                        //Yes button clicked
+                                        break;
+                                    case DialogInterface.BUTTON_NEGATIVE:
+                                        //No button clicked
+                                        break;
+                                }
+                            }
+                        };//dialog listener
 
-                        InputMethodManager imm = (InputMethodManager) getSystemService(Activity.INPUT_METHOD_SERVICE);
-                        imm.toggleSoftInput(InputMethodManager.HIDE_IMPLICIT_ONLY, 0);
-
+                        AlertDialog.Builder fieldAlert = new AlertDialog.Builder(CheckRepairStatus.this);
+                        fieldAlert.setMessage("Repair job number not found").setPositiveButton("OK", dialogClickListener).show();
                     }
                 }
-                else{
-                    DialogInterface.OnClickListener dialogClickListener = new DialogInterface.OnClickListener() {
-                        @Override
-                        public void onClick(DialogInterface dialog, int option) {
-                            switch (option) {
-                                case DialogInterface.BUTTON_POSITIVE:
-                                    //Yes button clicked
-                                    break;
-                                case DialogInterface.BUTTON_NEGATIVE:
-                                    //No button clicked
-                                    break;
-                            }
-                        }
-                    };//dialog listener
 
-                    AlertDialog.Builder fieldAlert = new AlertDialog.Builder(CheckRepairStatus.this);
-                    fieldAlert.setMessage("Repair job number not found").setPositiveButton("OK", dialogClickListener).show();
+                @Override
+                public void onCancelled(DatabaseError databaseError) {
+                    System.out.println("Database Error");
                 }
-            }
 
-            @Override
-            public void onCancelled(DatabaseError databaseError) {
-                System.out.println("Database Error");
-            }
-
-        });
+            });
+        }
+        catch (Exception e){
+            System.out.println("ERROR: Unable to search firebase");
+            Toast.makeText(this,"ERROR: Unable to search firebase",Toast.LENGTH_LONG).show();
+        }
     }
 
     @Override
     public void onClick(View view) {
 
-        if (view == buttonRepairQuery) {
+        if (view == imageButtonRepairQuery) {
             if(checkFieldsAreNotEmpty()) {
                 searchFirebase();
             }
@@ -233,6 +246,14 @@ public class CheckRepairStatus extends AppCompatActivity implements View.OnClick
     public void finish() {
         super.finish();
         overridePendingTransition(R.anim.slide_in_left, R.anim.slide_out_right);
+    }
+
+    @Override
+    protected void onRestart() {
+        super.onRestart();
+        mAuth.signOut();
+        startActivity(new Intent(this, LoginScreen.class));
+        finish();
     }
 
 }

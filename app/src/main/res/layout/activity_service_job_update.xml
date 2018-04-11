@@ -21,15 +21,18 @@
                 android:layout_height="wrap_content"
                 android:layout_margin="14dp"
                 android:ems="10"
-                android:hint="Service Job Number"
+                android:hint="@string/service_job_number"
                 android:inputType="textPersonName" />
 
-            <Button
-                android:id="@+id/button_ServiceJobSearch"
+            <ImageButton
+                android:id="@+id/imageButton_ServiceJobSearch"
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content"
+                android:layout_height="75dp"
                 android:layout_margin="14dp"
-                android:text="Search Job" />
+                android:background="#0000"
+                android:scaleType="fitCenter"
+                android:text="@string/search_job"
+                app:srcCompat="@drawable/searchbutton" />
 
             <TextView
                 android:id="@+id/textView_ServiceJobNumberReturned"
@@ -66,12 +69,15 @@
                 android:layout_margin="14dp"
                 android:textSize="18sp" />
 
-            <Button
-                android:id="@+id/button_ServiceJobAddNotes"
+            <ImageButton
+                android:id="@+id/imageButton_ServiceJobAddNotes"
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content"
+                android:layout_height="75dp"
                 android:layout_margin="14dp"
-                android:text="Add Notes" />
+                android:background="#0000"
+                android:scaleType="fitCenter"
+                android:contentDescription="@string/add_notes_button"
+                app:srcCompat="@drawable/addnotes" />
 
         </LinearLayout>
     </ScrollView>

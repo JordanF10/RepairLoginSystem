@@ -10,8 +10,8 @@
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
 
-        <activity android:name=".LoginScreen"/>
-        <activity android:name=".HomeScreen" />
+        <activity android:name=".LoginScreen" android:theme="@style/AppTheme.NoActionBar"/>
+        <activity android:name=".HomeScreen" android:theme="@style/AppTheme.NoActionBar"/>
         <activity
             android:name=".LoginRepair"
             android:parentActivityName=".HomeScreen" />

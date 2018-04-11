@@ -10,12 +10,14 @@
     <ScrollView
         android:id="@+id/scrollViewRepairLogin"
         android:layout_width="match_parent"
-        android:layout_height="match_parent">
+        android:layout_height="match_parent"
+        tools:layout_editor_absoluteX="0dp"
+        tools:layout_editor_absoluteY="0dp">
 
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:orientation="vertical" >
+            android:orientation="vertical">
 
             <EditText
                 android:id="@+id/editText_CustomerName"
@@ -25,7 +27,7 @@
                 android:layout_marginStart="8dp"
                 android:layout_marginTop="30dp"
                 android:ems="10"
-                android:hint="Customer Name"
+                android:hint="@string/customer_name"
                 android:inputType="textPersonName"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
@@ -38,10 +40,10 @@
                 android:layout_marginEnd="8dp"
                 android:layout_marginStart="8dp"
                 android:layout_marginTop="30dp"
-                android:maxLength="11"
                 android:ems="10"
-                android:hint="Customer Phone Number"
-                android:inputType="number"
+                android:hint="@string/customer_phone_number"
+                android:inputType="phone"
+                android:maxLength="11"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toTopOf="@+id/editText_CustomerName" />
@@ -54,7 +56,7 @@
                 android:layout_marginStart="8dp"
                 android:layout_marginTop="30dp"
                 android:ems="10"
-                android:hint="Customer Email Number"
+                android:hint="@string/customer_email_number"
                 android:inputType="textEmailAddress"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
@@ -67,10 +69,10 @@
                 android:layout_marginEnd="8dp"
                 android:layout_marginStart="8dp"
                 android:layout_marginTop="30dp"
-                android:maxLength="15"
                 android:ems="10"
-                android:hint="IMEI Number"
+                android:hint="@string/imei_number"
                 android:inputType="number"
+                android:maxLength="15"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toBottomOf="@+id/editText_CustomerEmailAddress" />
@@ -83,12 +85,12 @@
                 android:layout_marginStart="8dp"
                 android:layout_marginTop="32dp"
                 android:ems="10"
-                android:hint="Fault With Handset"
+                android:gravity="top"
+                android:hint="@string/fault_with_handset"
                 android:inputType="textMultiLine"
                 android:minLines="5"
-                android:singleLine="false"
                 android:scrollHorizontally="false"
-                android:gravity="top"
+                android:singleLine="false"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintHorizontal_bias="0.503"
                 app:layout_constraintStart_toStartOf="parent"
@@ -101,27 +103,31 @@
                 android:layout_marginEnd="8dp"
                 android:layout_marginStart="8dp"
                 android:layout_marginTop="30dp"
-                android:maxLength="15"
                 android:ems="10"
-                android:hint="Standby Phone IMEI Number (optional)"
-                android:inputType="number"
+                android:hint="@string/standby_phone_imei_number_optional"
+                android:inputType="phone"
+                android:maxLength="15"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toBottomOf="@+id/editText_FaultDescription" />
 
+            <ImageButton
+                android:id="@+id/imageButton_SendRepairLogin"
+                android:layout_width="match_parent"
+                android:layout_height="75dp"
+                android:layout_marginBottom="8dp"
+                android:layout_marginEnd="8dp"
+                android:layout_marginStart="8dp"
+                android:layout_marginTop="8dp"
+                android:background="#0000"
+                android:scaleType="fitCenter"
+                android:contentDescription="@string/submit_repair"
+                app:layout_constraintBottom_toBottomOf="@+id/scrollViewRepairLogin"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:srcCompat="@drawable/submitbutton" />
+
         </LinearLayout>
     </ScrollView>
-
-    <Button
-        android:id="@+id/button_SendRepairLogin"
-        android:layout_width="0dp"
-        android:layout_height="45dp"
-        android:layout_marginBottom="8dp"
-        android:layout_marginEnd="8dp"
-        android:layout_marginStart="8dp"
-        android:text="Submit Repair"
-        app:layout_constraintBottom_toBottomOf="@+id/scrollViewRepairLogin"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent" />
 
 </android.support.constraint.ConstraintLayout>

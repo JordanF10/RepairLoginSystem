@@ -6,7 +6,6 @@ import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.view.View;
-import android.widget.Button;
 import android.widget.ImageButton;
 import android.widget.TextView;
 
@@ -16,8 +15,7 @@ import com.google.firebase.auth.FirebaseUser;
 public class HomeScreen extends AppCompatActivity implements View.OnClickListener {
 
     private FirebaseAuth mAuth;
-    private Button buttonLogout;
-    private TextView textviewUsername;
+    private ImageButton imageButtonLogout;
     private ImageButton imageButtonLoginRepair;
     private ImageButton imageButtonCheckRepair;
     private ImageButton imageButtonEngineerScreen;
@@ -31,6 +29,7 @@ public class HomeScreen extends AppCompatActivity implements View.OnClickListene
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_home_screen);
 
+        TextView textviewUsername;
         mAuth = FirebaseAuth.getInstance();
 
         if(mAuth.getCurrentUser() == null){
@@ -43,7 +42,7 @@ public class HomeScreen extends AppCompatActivity implements View.OnClickListene
         textviewUsername = findViewById(R.id.textView_Username);
         textviewUsername.setText("Welcome " + user.getEmail());
 
-        buttonLogout = findViewById(R.id.button_Logout);
+        imageButtonLogout = findViewById(R.id.imageButton_Logout);
         imageButtonLoginRepair = findViewById(R.id.imageButton_RepairLoginScreen);
         imageButtonCheckRepair = findViewById(R.id.imageButton_CheckRepairStatus);
         imageButtonEngineerScreen = findViewById(R.id.imageButton_EngineerUpdateScreen);
@@ -51,7 +50,7 @@ public class HomeScreen extends AppCompatActivity implements View.OnClickListene
         imageButtonServiceJobLogin = findViewById(R.id.imageButton_ServiceJobLogin);
         imageButtonServiceJobUpdate = findViewById(R.id.imageButton_ServiceJobUpdate);
 
-        buttonLogout.setOnClickListener(this);
+        imageButtonLogout.setOnClickListener(this);
         imageButtonLoginRepair.setOnClickListener(this);
         imageButtonCheckRepair.setOnClickListener(this);
         imageButtonEngineerScreen.setOnClickListener(this);
@@ -63,7 +62,7 @@ public class HomeScreen extends AppCompatActivity implements View.OnClickListene
 
     @Override
     public void onClick(View view) {
-        if (view == buttonLogout){
+        if (view == imageButtonLogout){
             mAuth.signOut();
             startActivity(new Intent(this, LoginScreen.class));
             finish();
@@ -123,5 +122,13 @@ public class HomeScreen extends AppCompatActivity implements View.OnClickListene
     public void finish() {
         super.finish();
         overridePendingTransition(R.anim.slide_in_left, R.anim.slide_out_right);
+    }
+
+    @Override
+    protected void onRestart() {
+        super.onRestart();
+        mAuth.signOut();
+        startActivity(new Intent(this, LoginScreen.class));
+        finish();
     }
 }

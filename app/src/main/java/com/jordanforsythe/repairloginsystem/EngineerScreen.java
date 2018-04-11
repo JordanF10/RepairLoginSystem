@@ -8,12 +8,11 @@ import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.view.MenuItem;
 import android.view.View;
-import android.webkit.WebView;
-import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageButton;
 import android.widget.Spinner;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
@@ -35,9 +34,7 @@ public class EngineerScreen extends AppCompatActivity implements View.OnClickLis
     private EditText editTextEngineerRepairNumber;
     private Spinner spinnerEngineerRepairOptions;
     private EditText editTextEngineerRepairNotes;
-    private Button buttonEngineerUpdateRepairSend;
-    private int jobNumberTyped;
-    private String repairJobKey;
+    private ImageButton imageButtonEngineerUpdateRepairSend;
     private Repair tempRepair = new Repair();
 
     @Override
@@ -45,36 +42,40 @@ public class EngineerScreen extends AppCompatActivity implements View.OnClickLis
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_engineer_screen);
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+        getSupportActionBar().setTitle("Engineer Hub");
         mAuth = FirebaseAuth.getInstance();
+
+        if(mAuth.getCurrentUser() == null){
+            startActivity(new Intent(this, LoginScreen.class));
+            finish();
+        }
 
         editTextEngineerRepairNumber = findViewById(R.id.editText_EngineerRepairNumber);
         spinnerEngineerRepairOptions = findViewById(R.id.spinner_EngineerRepairOption);
         editTextEngineerRepairNotes = findViewById(R.id.editText_EngineerNotes);
-        buttonEngineerUpdateRepairSend = findViewById(R.id.button_EngineerUpdateRepair);
+        imageButtonEngineerUpdateRepairSend = findViewById(R.id.imageButton_EngineerUpdateRepair);
 
-        buttonEngineerUpdateRepairSend.setOnClickListener(this);
+        imageButtonEngineerUpdateRepairSend.setOnClickListener(this);
 
     }//on create
 
     private void sendEngineerUpdateToFirebase(){
-
-            repairJobKey = tempRepair.getDatabaseAutomaticKey();
+        try {
+            String repairJobKey = tempRepair.getDatabaseAutomaticKey();
             FirebaseUser user = mAuth.getCurrentUser();
             String username = user.getEmail();
 
-            if(repairJobKey != null) {
+            if (repairJobKey != null) {
                 repairs.child(repairJobKey).child("repairStatus").setValue(spinnerEngineerRepairOptions.getSelectedItem().toString());
 
                 long currentDate = System.currentTimeMillis();
                 tempRepair.setTimeDateBookedIn(currentDate);
                 String formattedDate = tempRepair.getFormattedTimestamp();
 
-                if(tempRepair.getJobNotes() != null) {
+                if (tempRepair.getJobNotes() != null) {
                     repairs.child(repairJobKey).child("engineerNotes").setValue("\n" + "Engineer: " + username + "\n" + formattedDate + "\nNotes: " +
-                                                        editTextEngineerRepairNotes.getText().toString() +"\n"+ tempRepair.getJobNotes());
-                }
-
-                else{
+                            editTextEngineerRepairNotes.getText().toString() + "\n" + tempRepair.getJobNotes());
+                } else {
                     repairs.child(repairJobKey).child("engineerNotes").setValue("\n" + "Engineer: " + username + "\n" + formattedDate + "\nNotes: " + editTextEngineerRepairNotes.getText().toString());
                 }
 
@@ -101,57 +102,63 @@ public class EngineerScreen extends AppCompatActivity implements View.OnClickLis
                 });
 
             }
-
-
-
-
+        }
+        catch (Exception e){
+            Toast.makeText(this,"ERROR: Unable to update Repair Job",Toast.LENGTH_LONG).show();
+        }
     }//send update to firebase
 
     private void getRepairJob(){
 
-        jobNumberTyped = Integer.parseInt(editTextEngineerRepairNumber.getText().toString());
+        int jobNumberTyped = Integer.parseInt(editTextEngineerRepairNumber.getText().toString());
 
         Query firebaseDatabaseQuery = repairs.orderByChild("jobNumber").equalTo(jobNumberTyped);
 
-        firebaseDatabaseQuery.addValueEventListener(new ValueEventListener() {
-            @Override
-            public void onDataChange(DataSnapshot dataSnapshot) {
+        try {
 
-                if(dataSnapshot.exists()) {
-                    for (DataSnapshot repairsnapshot : dataSnapshot.getChildren()) {
+            firebaseDatabaseQuery.addValueEventListener(new ValueEventListener() {
+                @Override
+                public void onDataChange(DataSnapshot dataSnapshot) {
 
-                        tempRepair.setDatabaseAutomaticKey(repairsnapshot.getKey());
+                    if (dataSnapshot.exists()) {
+                        for (DataSnapshot repairsnapshot : dataSnapshot.getChildren()) {
 
-                        if (repairsnapshot.child("engineerNotes").getValue() != null) {
-                            tempRepair.setJobNotes(repairsnapshot.child("engineerNotes").getValue().toString());
-                        }//if to check if notes have been added before
+                            tempRepair.setDatabaseAutomaticKey(repairsnapshot.getKey());
+
+                            if (repairsnapshot.child("engineerNotes").getValue() != null) {
+                                tempRepair.setJobNotes(repairsnapshot.child("engineerNotes").getValue().toString());
+                            }//if to check if notes have been added before
+                        }
+                    } else {
+                        DialogInterface.OnClickListener dialogClickListener = new DialogInterface.OnClickListener() {
+                            @Override
+                            public void onClick(DialogInterface dialog, int option) {
+                                switch (option) {
+                                    case DialogInterface.BUTTON_POSITIVE:
+                                        //Yes button clicked
+                                        break;
+                                    case DialogInterface.BUTTON_NEGATIVE:
+                                        //No button clicked
+                                        break;
+                                }
+                            }
+                        };//dialog listener
+
+                        AlertDialog.Builder fieldAlert = new AlertDialog.Builder(EngineerScreen.this);
+                        fieldAlert.setMessage("Repair job not found").setPositiveButton("OK", dialogClickListener).show();
                     }
                 }
-                else{
-                    DialogInterface.OnClickListener dialogClickListener = new DialogInterface.OnClickListener() {
-                        @Override
-                        public void onClick(DialogInterface dialog, int option) {
-                            switch (option) {
-                                case DialogInterface.BUTTON_POSITIVE:
-                                    //Yes button clicked
-                                    break;
-                                case DialogInterface.BUTTON_NEGATIVE:
-                                    //No button clicked
-                                    break;
-                            }
-                        }
-                    };//dialog listener
 
-                    AlertDialog.Builder fieldAlert = new AlertDialog.Builder(EngineerScreen.this);
-                    fieldAlert.setMessage("Repair job not found").setPositiveButton("OK", dialogClickListener).show();
+                @Override
+                public void onCancelled(DatabaseError databaseError) {
                 }
-            }
 
-            @Override
-            public void onCancelled(DatabaseError databaseError) {
-            }
-
-        });
+            });
+        }
+        catch (Exception e){
+            System.out.println("ERROR: Unable to get repair job");
+            Toast.makeText(this,"ERROR: Unable to get repair job",Toast.LENGTH_LONG).show();
+        }
 
     }//get repair job number
 
@@ -185,7 +192,7 @@ public class EngineerScreen extends AppCompatActivity implements View.OnClickLis
 
     @Override
     public void onClick(View view) {
-        if( view == buttonEngineerUpdateRepairSend) {
+        if( view == imageButtonEngineerUpdateRepairSend) {
             if (checkFieldsAreNotEmpty()) {
                 tempRepair.setJobNotes("");
                 getRepairJob();
@@ -257,5 +264,13 @@ public class EngineerScreen extends AppCompatActivity implements View.OnClickLis
     public void finish() {
         super.finish();
         overridePendingTransition(R.anim.slide_in_left, R.anim.slide_out_right);
+    }
+
+    @Override
+    protected void onRestart() {
+        super.onRestart();
+        mAuth.signOut();
+        startActivity(new Intent(this, LoginScreen.class));
+        finish();
     }
 }//class

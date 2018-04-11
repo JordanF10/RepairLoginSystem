@@ -13,23 +13,28 @@
         android:layout_marginEnd="8dp"
         android:layout_marginStart="8dp"
         android:layout_marginTop="8dp"
-        android:text="TextView"
+        android:text="@string/holder"
+        android:textColor="@color/colorAccent"
         android:textSize="20sp"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
 
-    <Button
-        android:id="@+id/button_Logout"
+    <ImageButton
+        android:id="@+id/imageButton_Logout"
         android:layout_width="0dp"
-        android:layout_height="wrap_content"
-        android:layout_marginBottom="8dp"
+        android:layout_height="75dp"
+        android:layout_marginBottom="16dp"
         android:layout_marginEnd="8dp"
         android:layout_marginStart="8dp"
-        android:text="Logout "
+        android:background="#0000"
+        android:scaleType="fitCenter"
+        android:contentDescription="@string/logout"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent" />
+        app:layout_constraintHorizontal_bias="0.497"
+        app:layout_constraintStart_toStartOf="parent"
+        app:srcCompat="@drawable/logoutbutton" />
 
     <ImageButton
         android:id="@+id/imageButton_RepairLoginScreen"
@@ -39,7 +44,7 @@
         android:layout_marginTop="16dp"
         android:background="#0000"
         android:scaleType="fitCenter"
-        android:text="Login Repair"
+        android:contentDescription="@string/login_repair"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/textView_Username"
         app:srcCompat="@drawable/loginrepairbutton" />
@@ -52,7 +57,7 @@
         android:layout_marginTop="28dp"
         android:background="#0000"
         android:scaleType="fitCenter"
-        android:text="Check Repair "
+        android:contentDescription="@string/check_repair"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/imageButton_LogoutRepairActivity"
         app:srcCompat="@drawable/checkstatusbutton" />
@@ -65,7 +70,7 @@
         android:layout_marginTop="28dp"
         android:background="#0000"
         android:scaleType="fitCenter"
-        android:text="Engineer Screen"
+        android:contentDescription="@string/engineer_screen"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/imageButton_RepairLoginScreen"
         app:srcCompat="@drawable/engineerhubbutton" />
@@ -78,7 +83,7 @@
         android:layout_marginTop="16dp"
         android:background="#0000"
         android:scaleType="fitCenter"
-        android:text="Logout Repair"
+        android:contentDescription="Logout Repair"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/textView_Username"
         app:srcCompat="@drawable/logoutrepairbutton" />
@@ -91,7 +96,7 @@
         android:layout_marginTop="28dp"
         android:background="#0000"
         android:scaleType="fitCenter"
-        android:text="Service Job Login"
+        android:contentDescription="@string/service_job_login"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/imageButton_EngineerUpdateScreen"
         app:srcCompat="@drawable/loginservicejobbutton" />
@@ -104,7 +109,7 @@
         android:layout_marginTop="28dp"
         android:background="#0000"
         android:scaleType="fitCenter"
-        android:text="Update Service Job"
+        android:contentDescription="@string/update_service_job"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/imageButton_CheckRepairStatus"
         app:srcCompat="@drawable/updateservicejobutton" />
