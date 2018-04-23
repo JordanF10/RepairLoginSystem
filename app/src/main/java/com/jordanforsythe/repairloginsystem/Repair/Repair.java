@@ -6,6 +6,7 @@ import java.util.Date;
 
 public class Repair {
 
+    //variables that are contained within a repair class
     private String repairStatus;
     private String customerName;
     private String customerPhoneNumber;
@@ -21,6 +22,7 @@ public class Repair {
     private String loggedInBy;
 
 
+    //empty repair method for firebase
     public Repair() {
     }
 
@@ -71,6 +73,7 @@ public class Repair {
 
     public void setLoggedInBy(String loggedInBy) {this.loggedInBy = loggedInBy;}
 
+    //method to return a formatted time stamo
     public String getFormattedTimestamp() {
         String datePattern = "d MMM, h:mm a";
         SimpleDateFormat dateFormat = new SimpleDateFormat(datePattern);

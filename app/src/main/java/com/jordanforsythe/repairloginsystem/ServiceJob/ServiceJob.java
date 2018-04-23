@@ -5,7 +5,7 @@ import java.util.Date;
 
 public class ServiceJob {
 
-
+    //variables that are contained within a service job class
     private String serviceJobCustomerName;
     private String serviceJobCustomerPhone;
     private String serviceJobFaultNotes;
@@ -14,7 +14,7 @@ public class ServiceJob {
     private String serviceJobUsername;
     private String serviceDatabaseAutomaticKey;
 
-
+    //Empty method with the class name for firebase
     public ServiceJob(){
     }
 

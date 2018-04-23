@@ -25,10 +25,12 @@ import com.jordanforsythe.repairloginsystem.Repair.Repair;
 
 public class LoginRepair extends AppCompatActivity implements View.OnClickListener, ChildEventListener {
 
+    //setting the isntance of firebase database and auth
     public static final String REPAIR_FIREBASE_KEY = "repairs";
     FirebaseDatabase firebaseDatabase = FirebaseDatabase.getInstance();
     DatabaseReference repairs = firebaseDatabase.getReference(REPAIR_FIREBASE_KEY);
     private FirebaseAuth mAuth;
+    //initialising the visual elements used in the class
     private ImageButton imageButtonSendRepairData;
     private EditText editTextCustomerName;
     private EditText editTextImeiNumber;
@@ -45,16 +47,18 @@ public class LoginRepair extends AppCompatActivity implements View.OnClickListen
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_login_repair);
-
+        //setting the action bar to have a back button and text
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
         getSupportActionBar().setTitle("Login Repair");
         mAuth = FirebaseAuth.getInstance();
 
+        //checking if the current user exsists and if not returning to the login screen
         if(mAuth.getCurrentUser() == null){
             startActivity(new Intent(this, LoginScreen.class));
             finish();
         }
 
+        //setting the visual elements to their layout ID
         imageButtonSendRepairData = findViewById(R.id.imageButton_SendRepairLogin);
         editTextCustomerName = findViewById(R.id.editText_CustomerName);
         editTextImeiNumber = findViewById(R.id.editText_ImeiNumber);
@@ -63,20 +67,23 @@ public class LoginRepair extends AppCompatActivity implements View.OnClickListen
         editTextCustomerPhone = findViewById(R.id.editText_CustomerPhoneNumber);
         editTextStandbyPhoneImei = findViewById(R.id.editText_standbyPhoneImei);
 
-        queryNextJobNo();
-
+        //adding onclick listener for creating the repair
         imageButtonSendRepairData.setOnClickListener(this);
 
         repairs.addChildEventListener(this);
+    }//on create
 
-    }
-
+    //method to send the repair to the repair databse
     private void pushRepairToFirebase(){
 
         try {
 
+            //running the method to query the next job number
+            queryNextJobNo();
+
             int jobNumber = tempRepair.getJobNumber();
 
+            //setting the variables to the values of the edit texts
             String customerName = editTextCustomerName.getText().toString();
             String customerPhone = editTextCustomerPhone.getText().toString();
             String customerEmail = editTextCustomerEmail.getText().toString();
@@ -91,18 +98,19 @@ public class LoginRepair extends AppCompatActivity implements View.OnClickListen
 
             String standbyPhoneIMEI = editTextStandbyPhoneImei.getText().toString();
 
+            //if the standby field is empty then set it to no standby given
             if (standbyPhoneIMEI.isEmpty()) {
                 standbyPhoneIMEI = "No standby given";
             }
 
-
+            //setting a new repair to the value of all of the variables
             Repair repairToSend = new Repair(customerName, customerPhone, customerEmail, imeiNumber, faultDescription, jobNumber,
                     repairStatusLoggedIn, currentDate, standbyPhoneIMEI, engineerNotes, username);
 
-            System.out.println("REPAIR SENT, Job number was " + String.valueOf(jobNumber) + ", success!" + customerEmail + customerPhone);
-
+            //sending the final repair to firebase
             repairs.push().setValue(repairToSend);
 
+            //displaying a customer layout dialog giving the user the job number of the repair booked in
             final AlertDialog.Builder mBuilder = new AlertDialog.Builder(this);
             View mView = getLayoutInflater().inflate(R.layout.dialog_repair_logged_in, null);
             String textForDialog = "Your customers job number is " + jobNumber + ".\nPlease give this to the customer";
@@ -124,27 +132,32 @@ public class LoginRepair extends AppCompatActivity implements View.OnClickListen
                     finish();
                 }
             });
-        }
+        }//try
         catch (Exception e){
             Toast.makeText(this,"ERROR: Unable to send repair to firebase",Toast.LENGTH_LONG).show();
         }
 
-        }//Push Repair to Firebase method
+    }//Push Repair to Firebase method
 
+    //onclick method to run when button is pressed
     @Override
     public void onClick(View view) {
         if(view == imageButtonSendRepairData){
+            //checking fields are not empty first
             if(checkFieldsAreNotEmpty()) {
+                //running the method to send the repair to firebase
                 pushRepairToFirebase();
             }
         }
     }//On click method
 
+    //method to check that all of the required fields are not empty
     public boolean checkFieldsAreNotEmpty(){
 
         boolean areallempty = false;
         String dialogMessage = "";
 
+        //if statements to check if the fields meet the requirements
         if(editTextCustomerName.getText().toString().length() > 0){
 
             if(editTextCustomerPhone.getText().toString().length() == 11){
@@ -181,6 +194,7 @@ public class LoginRepair extends AppCompatActivity implements View.OnClickListen
             dialogMessage = "Please enter a Customer Name";
         }
 
+        //if still set to false then tell the user what the issue is in a dialog box
         if(!areallempty) {
 
             DialogInterface.OnClickListener dialogClickListener = new DialogInterface.OnClickListener() {
@@ -206,8 +220,10 @@ public class LoginRepair extends AppCompatActivity implements View.OnClickListen
 
     }//check fields are not empty
 
+    //method to get the next job number avaliable
     private void queryNextJobNo(){
 
+        //query to get the last repair
         Query firebaseDatabaseQuery = repairs.orderByChild("jobNumber").limitToLast(1);
 
         try {
@@ -215,9 +231,10 @@ public class LoginRepair extends AppCompatActivity implements View.OnClickListen
             firebaseDatabaseQuery.addValueEventListener(new ValueEventListener() {
                 @Override
                 public void onDataChange(DataSnapshot dataSnapshot) {
-
+                    //datasnapshot listener
                     for (DataSnapshot repairsnapshot : dataSnapshot.getChildren()) {
 
+                        //setting the values of temp repair to the last job mnumber
                         String jobNumber = (String) repairsnapshot.child("jobNumber").getValue().toString();
                         nextRepairJobNumber = (Integer.parseInt(jobNumber));
                         tempRepair.setJobNumber(nextRepairJobNumber);
@@ -260,6 +277,7 @@ public class LoginRepair extends AppCompatActivity implements View.OnClickListen
 
     }
 
+    //method to override the backm button pressed and show a dialog to ask if the user wanted to exit
     @Override
     public void onBackPressed(){
 
@@ -287,6 +305,7 @@ public class LoginRepair extends AppCompatActivity implements View.OnClickListen
 
     }//on back pressed\
 
+    //method to take the user back to the home screen is the action bar back is pressed
     public boolean onOptionsItemSelected(MenuItem item){
         Intent myIntent = new Intent(getApplicationContext(), HomeScreen.class);
         startActivityForResult(myIntent, 0);
@@ -294,12 +313,14 @@ public class LoginRepair extends AppCompatActivity implements View.OnClickListen
         return true;
     }//Make menu arrow button work
 
+    // method to override the finish transition
     @Override
     public void finish() {
         super.finish();
         overridePendingTransition(R.anim.slide_in_left, R.anim.slide_out_right);
     }
 
+    //method to log the user out on restart of the activity
     @Override
     protected void onRestart() {
         super.onRestart();
