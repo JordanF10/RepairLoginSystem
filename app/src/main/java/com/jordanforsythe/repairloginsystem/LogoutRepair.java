@@ -296,4 +296,4 @@ public class LogoutRepair extends AppCompatActivity implements View.OnClickListe
         startActivity(new Intent(this, LoginScreen.class));
         finish();
     }
-}//class
+}//logoutRepair

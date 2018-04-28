@@ -2,6 +2,7 @@ package com.jordanforsythe.repairloginsystem;
 
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.os.Handler;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
@@ -78,9 +79,6 @@ public class LoginRepair extends AppCompatActivity implements View.OnClickListen
 
         try {
 
-            //running the method to query the next job number
-            queryNextJobNo();
-
             int jobNumber = tempRepair.getJobNumber();
 
             //setting the variables to the values of the edit texts
@@ -145,8 +143,17 @@ public class LoginRepair extends AppCompatActivity implements View.OnClickListen
         if(view == imageButtonSendRepairData){
             //checking fields are not empty first
             if(checkFieldsAreNotEmpty()) {
-                //running the method to send the repair to firebase
-                pushRepairToFirebase();
+
+                //running the method to query the next job number
+                queryNextJobNo();
+                Handler handler = new Handler();
+                handler.postDelayed(new Runnable() {
+                    public void run() {
+                        //after 1 second
+                        //running the method to send the repair to firebase
+                        pushRepairToFirebase();
+                    }
+                }, 1000);
             }
         }
     }//On click method
@@ -328,4 +335,4 @@ public class LoginRepair extends AppCompatActivity implements View.OnClickListen
         startActivity(new Intent(this, LoginScreen.class));
         finish();
     }
-}
+}//loginrepair

@@ -57,4 +57,4 @@ public class ServiceJob {
         return dateFormat.format(repairCreationDate);
     }
 
-}
+}//ServiceJob

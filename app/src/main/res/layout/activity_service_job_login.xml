@@ -7,19 +7,18 @@
     tools:context="com.jordanforsythe.repairloginsystem.ServiceJobLogin">
 
     <EditText
-        android:id="@+id/editText_ServiceJobFault"
-        android:layout_width="0dp"
+        android:id="@+id/editText_ServiceJobCustomerName"
+        android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginEnd="30dp"
-        android:layout_marginStart="30dp"
-        android:layout_marginTop="20dp"
+        android:layout_marginEnd="8dp"
+        android:layout_marginStart="8dp"
+        android:layout_marginTop="30dp"
         android:ems="10"
-        android:hint="@string/fault_notes"
-        android:inputType="textMultiLine"
-        android:minLines="4"
+        android:hint="@string/customer_name"
+        android:inputType="textPersonName"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/editText_ServiceJobCustomerPhone" />
+        app:layout_constraintTop_toTopOf="parent" />
 
     <EditText
         android:id="@+id/editText_ServiceJobCustomerPhone"
@@ -37,18 +36,19 @@
         app:layout_constraintTop_toBottomOf="@+id/editText_ServiceJobCustomerName" />
 
     <EditText
-        android:id="@+id/editText_ServiceJobCustomerName"
-        android:layout_width="wrap_content"
+        android:id="@+id/editText_ServiceJobFault"
+        android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:layout_marginEnd="8dp"
-        android:layout_marginStart="8dp"
-        android:layout_marginTop="30dp"
+        android:layout_marginEnd="30dp"
+        android:layout_marginStart="30dp"
+        android:layout_marginTop="20dp"
         android:ems="10"
-        android:hint="@string/customer_name"
-        android:inputType="textPersonName"
+        android:hint="@string/fault_notes"
+        android:inputType="textMultiLine"
+        android:minLines="4"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
+        app:layout_constraintTop_toBottomOf="@+id/editText_ServiceJobCustomerPhone" />
 
     <ImageButton
         android:id="@+id/imageButton_ServiceJobCreate"

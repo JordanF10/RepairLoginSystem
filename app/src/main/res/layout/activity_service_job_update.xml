@@ -22,7 +22,7 @@
                 android:layout_margin="14dp"
                 android:ems="10"
                 android:hint="@string/service_job_number"
-                android:inputType="textPersonName" />
+                android:inputType="number" />
 
             <ImageButton
                 android:id="@+id/imageButton_ServiceJobSearch"

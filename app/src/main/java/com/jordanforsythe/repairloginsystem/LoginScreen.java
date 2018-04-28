@@ -1,6 +1,9 @@
 package com.jordanforsythe.repairloginsystem;
 
+import android.content.Context;
 import android.content.Intent;
+import android.net.ConnectivityManager;
+import android.net.NetworkInfo;
 import android.support.annotation.NonNull;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
@@ -85,13 +88,29 @@ public class LoginScreen extends AppCompatActivity implements View.OnClickListen
                     }
                 });
 
-    }
+    }//user login
 
     //setting the onclick listener for login
     @Override
     public void onClick(View view) {
         if(view == buttonLogin){
-            userLogin();
+            if(isNetworkAvailable()) {
+                userLogin();
+            }
+            else{
+                Toast.makeText(this, "Internet Connection Required", Toast.LENGTH_LONG).show();
+            }
         }
     }
+
+    //Code taken from https://stackoverflow.com/questions/4238921/detect-whether-there-is-an-internet-connection-available-on-android?utm_
+    //medium=organic&utm_source=google_rich_qa&utm_campaign=google_rich_qa
+    //method to check if network is connected before trying to login.
+    private boolean isNetworkAvailable() {
+        ConnectivityManager connectivityManager
+                = (ConnectivityManager) getSystemService(Context.CONNECTIVITY_SERVICE);
+        NetworkInfo activeNetworkInfo = connectivityManager.getActiveNetworkInfo();
+        return activeNetworkInfo != null && activeNetworkInfo.isConnected();
+    }
+
 }//class

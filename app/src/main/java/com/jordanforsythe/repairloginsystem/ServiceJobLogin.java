@@ -2,6 +2,7 @@ package com.jordanforsythe.repairloginsystem;
 
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.os.Handler;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
@@ -130,7 +131,14 @@ public class ServiceJobLogin extends AppCompatActivity implements View.OnClickLi
             //check if the fields are not empty
             if(checkFieldsAreNotEmpty()) {
                 //try and send the service job to firebase
-                pushServiceJobToFirebase();
+                queryNextJobNo();
+                Handler handler = new Handler();
+                handler.postDelayed(new Runnable() {
+                    public void run() {
+                        //after 1 second
+                        pushServiceJobToFirebase();
+                    }
+                }, 1000);
             }
         }
     }//onclick
@@ -139,10 +147,9 @@ public class ServiceJobLogin extends AppCompatActivity implements View.OnClickLi
     private void pushServiceJobToFirebase(){
         try {
             //querying the next service job number
-            queryNextJobNo();
 
             int serviceJobNumber = tempServiceJob.getServiceJobNumber();
-
+            System.out.println(serviceJobNumber);
             //setting the variables needed for a service job from the text entry fields
             String customerName = editTextServiceJobCustomerName.getText().toString();
             String customerPhone = editTextServiceJobCustomerPhone.getText().toString();

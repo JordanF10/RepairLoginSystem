@@ -164,9 +164,8 @@ public class CheckRepairStatus extends AppCompatActivity implements View.OnClick
 
                 @Override
                 public void onCancelled(DatabaseError databaseError) {
-                    //printing out database error as a toast and system out
+                    //printing out database error as a system out
                     System.out.println("Database Error");
-                    Toast.makeText(getApplicationContext(), "Database Error", Toast.LENGTH_LONG).show();
                 }//database error
             });//query event listener
         }//try
@@ -278,6 +277,6 @@ public class CheckRepairStatus extends AppCompatActivity implements View.OnClick
         finish();
     }
 
-}
+}//checkrepairstatus
 
 
